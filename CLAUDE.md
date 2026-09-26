@@ -1,0 +1,156 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project
+
+Uni Swap — a peer skill-exchange platform for Astana IT University students (registration
+restricted to `@astanait.edu.kz`). This repo implements the MVP scope (BR1–BR5 from the BRD):
+domain-restricted signup with consent tracking, skill profiles (offer/want), matching, session
+requests, a polling-based chat, and admin moderation (block users, resolve reports). Reviews on
+completed sessions are the one BRD item still not built. A React Native/Expo mobile app is planned
+later, reusing this backend — the web
+app is built responsive/PWA-ready for that reason. Production must be hosted on a Kazakhstan-based
+VPS (personal-data residency requirement from the BRD); Vercel/Supabase-style hosting is fine for
+development only.
+
+Stack: Next.js (App Router, Turbopack) + Prisma + PostgreSQL + Auth.js v5 (email magic links via
+Resend) + Tailwind.
+
+## Commands
+
+- `npm run dev` — dev server
+- `npm run build` / `npm start` — production build / run
+- `npm run lint` — ESLint
+- `npx tsc --noEmit` — type-check
+- `npx prisma generate` — regenerate the Prisma client after editing `prisma/schema.prisma`
+- `npx prisma migrate dev --name <name>` — create and apply a migration (needs `DATABASE_URL`)
+- `npx prisma studio` — inspect the database
+- `npm run seed` (or `npx prisma db seed`) — populate `prisma/seed.ts`'s demo users/skills, so
+  `/matches` has something to show. Idempotent (upserts), safe to rerun. It also attaches demo
+  skills to whichever user has `DEMO_USER_EMAIL` in `prisma/seed.ts` — update that constant if the
+  account you're testing with changes. It also promotes that account to `role: ADMIN` (so you can
+  reach `/admin`) and creates one demo `Report` against a seed user, so the admin panel isn't empty.
+
+Copy `.env.example` to `.env.local` before running anything that touches auth or the DB. Required
+vars: `DATABASE_URL` (Postgres), `AUTH_SECRET` (`npx auth secret`), `RESEND_API_KEY` + `EMAIL_FROM`,
+`ALLOWED_EMAIL_DOMAINS`. **The Prisma CLI only auto-loads `.env`, not `.env.local`** — this repo keeps
+both in sync (both gitignored); if you add/change a var, update both files or `prisma migrate`/`generate`/
+`prisma db seed` won't see it.
+
+`ALLOWED_EMAIL_DOMAINS` currently includes `gmail.com,icloud.com` alongside `astanait.edu.kz` —
+**temporary**, added only because the `astanait.edu.kz` domain isn't yet verified in Resend, so
+university addresses can't receive real mail yet (Resend free-tier restriction: unverified-domain
+accounts can only send to the account owner's own inbox). Once the domain is verified in Resend
+(Domains → add SPF/DKIM), narrow this back to just `astanait.edu.kz` before onboarding real students.
+
+There is no test suite yet.
+
+## Local database (this machine)
+
+PostgreSQL 15 is installed at `/Library/PostgreSQL/15` (not Homebrew, no `psql` on `PATH` by
+default — add `/Library/PostgreSQL/15/bin` to use it directly). It's already running on port 5432
+with `pg_hba.conf` set to trust local connections, so the `postgres` superuser needs no password:
+`DATABASE_URL="postgresql://postgres@localhost:5432/uni_swap"`. The `uni_swap` database already
+existed (created outside this project) and now holds the full schema, applied via
+`prisma/migrations/20260926124800_init`. To reset it: `npx prisma migrate reset`.
+
+## Version gotchas
+
+This project is on **Next.js 16**, which has real breaking changes from what older training data
+assumes — check `node_modules/next/dist/docs/` before relying on remembered Next.js behavior.
+The one that already bit this setup: `middleware.ts` is deprecated in favor of `proxy.ts`, and with
+the `--src-dir` layout it must live at `src/proxy.ts` (not the repo root) or Next.js silently never
+invokes it — routes it's supposed to protect just render unauthenticated instead of redirecting.
+
+Prisma is intentionally pinned to **6.19.x**, not 7/8. Prisma 7 removed `datasource { url = ... }`
+from `schema.prisma` in favor of driver adapters + `prisma.config.ts`; that rewrite isn't worth the
+churn for this project, so don't `npm update prisma` past the 6.x line without deliberately doing
+that migration. (`npm audit` will show a few high-severity issues in Prisma's CLI-only dependencies
+for non-Postgres drivers — MySQL2 auth downgrade, deepmerge-ts stack exhaustion. They're in tooling
+this project never runs, not in the Postgres runtime path; not worth chasing for the MVP.)
+
+## Architecture
+
+**Auth (`src/auth.ts`, `src/proxy.ts`)** — Auth.js v5 with `PrismaAdapter` and the `Resend` email
+provider, but **JWT** session strategy, not database sessions. This is deliberate: the Auth.js
+Prisma adapter requires a model literally named `Session`, which would collide with the domain
+concept of a mentoring "session." The schema keeps a `Session` model purely so the adapter's types
+resolve — it's otherwise unused — and the actual business entity is called `SkillSession`. Don't
+rename `SkillSession` back to `Session` without first moving auth off the Prisma adapter's session
+table.
+
+Domain restriction and the consent checkbox are **not** enforced by Auth.js itself — the real entry
+point is `POST /api/register` (`src/app/api/register/route.ts`): it validates the email domain and
+consent, upserts the `User` row (setting `consentAt`), and only then calls `signIn("resend", …)` to
+send the magic link. `auth.ts`'s `signIn` callback re-checks domain / `consentAt` / `isBlocked` as a
+second line of defense in case `/api/auth/*` is hit directly. `src/proxy.ts` redirects unauthenticated
+requests to `/profile` and `/matches` toward `/register`, and blocked users toward `/blocked`; role
+and `isBlocked` are refreshed from the DB on every request via the `jwt` callback (acceptable at
+MVP scale — revisit if this becomes a hot path).
+
+**Matching (`src/lib/matching.ts`, BR3)** — a single raw SQL query (`prisma.$queryRaw` with CTEs),
+not an ORM loop, finds users whose `OFFER` skills intersect the current user's `WANT` skills and
+vice versa, ranking mutual matches first and then by total overlap. This is intentional: it's what
+keeps the "<3s for 1000 users" requirement trivially true. Keep it as one query rather than
+"simplifying" it into per-candidate Prisma calls. `findMatches()` returns `theyCanTeachMe` /
+`theyWantFromMe` as `{id, name}[]` (not just names) — the ids are what `RequestSessionForm` needs to
+create a `SkillSession` for a specific overlapping skill, so don't drop them back to plain strings.
+
+**Skills** — `Skill` is a shared, deduped catalog; `UserSkill` links a user to a skill with a
+`type` (`OFFER`/`WANT`) and `level`, unique per `(userId, skillId, type)`. Typing a skill name not
+yet in the catalog creates it on the fly (`src/app/api/profile/skills/route.ts`, `Skill.upsert` by
+name) — there's no admin approval step for new catalog entries yet.
+
+**Session requests (BR4, `SkillSession`)** — created from `/matches` (`RequestSessionForm`) via
+`POST /api/sessions`, always `requesterId` = the person clicking, `partnerId` = the match, `skillId`
+= whichever overlapping skill they picked (either direction — the schema doesn't record who's
+teaching whom, only who requested). Status transitions live in
+`/api/sessions/[id]/{accept,cancel,complete}` and are guarded server-side, not just in the UI: only
+the `partnerId` can `accept`, only from `PENDING`; `cancel` works for either participant from
+`PENDING` or `ACCEPTED`; `complete` works for either participant only from `ACCEPTED`. The shared
+`loadSkillSessionForParticipant()` in `src/lib/sessions.ts` is what enforces "only the two people on
+the session can see/touch it" — reuse it rather than re-checking `requesterId`/`partnerId` inline if
+you add more session endpoints. `/sessions` (`src/app/sessions/page.tsx`) lists both directions for
+the current user; there's no separate "incoming vs outgoing" split, just a per-row label.
+
+**Chat (BR, `Message`)** — polling, not WebSocket, on purpose (matches the BRD's own stated order:
+"simple with polling first, then Pusher/Socket.io"). `ChatThread` (client component) hits
+`GET /api/messages?with=<id>&since=<ISO timestamp>` every 3s and appends only what's new, rather
+than re-fetching and re-rendering the whole thread — `since` is the last message's `createdAt` on
+the client, not a server-tracked cursor. `/chat` (conversation list) is computed in JS from all of
+the user's `Message` rows grouped by the other participant, not a separate "conversations" table —
+fine at this scale, revisit with a real `Conversation` model only if the message volume ever makes
+that scan slow. Starting a chat happens from `/matches` or `/sessions` ("Написать" link to
+`/chat/[userId]`), not from a contact picker — there's no way yet to message someone you have no
+match/session with, which is intentional (mirrors "you can only report/contact people you've
+actually matched with").
+
+**Admin (BR7, `/admin`)** — gated three times, not once: `src/proxy.ts` redirects non-`ADMIN`
+sessions away from `/admin/*` at the edge, `src/app/admin/page.tsx` re-checks via
+`requireAdmin()` (`src/lib/admin.ts`) and `redirect("/")`s otherwise, and every
+`/api/admin/**` route re-checks `requireAdmin()` again before touching data. Don't remove any one
+of these three thinking another covers it — they're deliberately redundant since this route can
+block/unblock any account. Blocking a user is just flipping `User.isBlocked`; that field is already
+enforced everywhere else (`signIn` callback rejects login, `proxy.ts` redirects to `/blocked`,
+`findMatches()` filters blocked users out) — the admin panel doesn't need its own enforcement logic,
+just the toggle. Reports go through `reporterId`/`targetId` + `reason` (filed via the `ReportButton`
+component on `/matches` and `/sessions`) and move `OPEN → RESOLVED`/`DISMISSED`; there's no route
+back to `OPEN` yet.
+
+## Design
+
+Soft pink/rose theme, applied via Tailwind's built-in `rose` palette (no custom color config) plus
+a handful of `@layer components` classes in `src/app/globals.css` — `.btn-primary`, `.input-field`,
+`.text-muted`, `.card`, `.pill`, `.badge-mutual`. Reach for those classes on new pages/components
+instead of hand-rolling `bg-neutral-*`/`bg-rose-*` combinations inline; that's what keeps the whole
+app visually consistent (and is the only place a future palette change needs to happen). `:root`'s
+`--background`/`--foreground` in the same file set the page canvas — currently pure white with a
+deep-rose foreground in light mode (a dark plum/pink pair under `prefers-color-scheme: dark`).
+
+## Not yet built
+
+`Review`s gated on a `SkillSession` reaching `COMPLETED` — the last BRD MVP item. `/sessions` already
+has the `COMPLETED` status wired up; a review flow just needs a form gated on that status and a
+`POST /api/reviews` using the existing `Review` model (`sessionId`, `authorId`, `targetId`, `rating`,
+`text`, unique per `(sessionId, authorId)`).

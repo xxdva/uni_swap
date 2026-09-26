@@ -1,0 +1,65 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { isAllowedEmail, getAllowedDomains } from "@/lib/domain";
+import { signIn } from "@/auth";
+
+const schema = z.object({
+  email: z.string().email(),
+  consent: z.boolean().refine((v) => v === true, {
+    message: "Нужно согласие на обработку персональных данных",
+  }),
+});
+
+export async function POST(req: Request) {
+  const body = await req.json().catch(() => null);
+  const parsed = schema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "invalid_input", details: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  const email = parsed.data.email.toLowerCase().trim();
+
+  if (!isAllowedEmail(email)) {
+    const domains = getAllowedDomains().map((d) => `@${d}`).join(", ");
+    return NextResponse.json(
+      { error: "domain_not_allowed", message: `Регистрация доступна только на почту: ${domains}` },
+      { status: 400 }
+    );
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+
+  if (existing?.isBlocked) {
+    return NextResponse.json({ error: "blocked" }, { status: 403 });
+  }
+
+  // Пользователь создаётся сразу (ещё не подтверждён), чтобы зафиксировать
+  // момент согласия на обработку данных вместе с самой регистрацией.
+  await prisma.user.upsert({
+    where: { email },
+    create: { email, consentAt: new Date() },
+    update: existing?.emailVerified ? {} : { consentAt: new Date() },
+  });
+
+  // Auth.js не бросает исключение при сбое sendVerificationRequest (например,
+  // невалидный RESEND_API_KEY) — вместо этого signIn(..., { redirect: false })
+  // молча возвращает ссылку на страницу /api/auth/error. Поэтому проверяем
+  // именно результат, а не полагаемся на try/catch.
+  let redirectTarget: string;
+  try {
+    redirectTarget = await signIn("resend", { email, redirect: false });
+  } catch {
+    return NextResponse.json({ error: "send_failed" }, { status: 502 });
+  }
+
+  if (redirectTarget.includes("/api/auth/error")) {
+    return NextResponse.json({ error: "send_failed" }, { status: 502 });
+  }
+
+  return NextResponse.json({ ok: true });
+}
