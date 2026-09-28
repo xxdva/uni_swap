@@ -145,12 +145,32 @@ a handful of `@layer components` classes in `src/app/globals.css` — `.btn-prim
 `.text-muted`, `.card`, `.pill`, `.badge-mutual`. Reach for those classes on new pages/components
 instead of hand-rolling `bg-neutral-*`/`bg-rose-*` combinations inline; that's what keeps the whole
 app visually consistent (and is the only place a future palette change needs to happen). `:root`'s
-`--background`/`--foreground` in the same file set the page canvas — currently pure white with a
-deep-rose foreground in light mode (a dark plum/pink pair under `prefers-color-scheme: dark`).
+`--background`/`--foreground` in the same file set the page canvas (pure white / deep rose). The
+theme is deliberately **not** dark-mode-aware: `@custom-variant dark (&:where(.dark, .dark *));` at
+the top of `globals.css` neuters every Tailwind `dark:` class in the app (they only fire under an
+explicit `.dark` ancestor, which nothing ever adds) so the site looks the same regardless of the
+visitor's OS color-scheme setting — that was a deliberate fix after the white/pink redesign was
+invisible to anyone on a dark-mode system. Leave the `dark:` classes in place when editing existing
+files (harmless dead code, removing them is pure churn) but don't rely on `prefers-color-scheme`
+CSS or add a real dark theme without first deciding to reverse this.
+
+**Reviews (BR5, `Review`)** — the last MVP item, now built. `POST /api/reviews` (body `sessionId`,
+`rating` 1–5, optional `text`) reuses `loadSkillSessionForParticipant()` from `src/lib/sessions.ts`
+for the same "only the two participants" check as session actions, then requires
+`skillSession.status === "COMPLETED"`; `targetId` is derived server-side as "whichever of
+requester/partner isn't the caller" — the client never sends it. `/sessions` shows a `ReviewForm`
+for each `COMPLETED` session the current user hasn't reviewed yet, or the existing review (via the
+shared `Stars` component) once they have. `/profile` separately shows reviews *received* — a plain
+average of `Review.rating` where `targetId` = the viewed user, computed in the page, not stored.
 
 ## Not yet built
 
-`Review`s gated on a `SkillSession` reaching `COMPLETED` — the last BRD MVP item. `/sessions` already
-has the `COMPLETED` status wired up; a review flow just needs a form gated on that status and a
-`POST /api/reviews` using the existing `Review` model (`sessionId`, `authorId`, `targetId`, `rating`,
-`text`, unique per `(sessionId, authorId)`).
+Everything in the BRD's MVP scope is implemented. What's left is not code:
+- Verify `astanait.edu.kz` in Resend (Domains → SPF/DKIM) so real student addresses can receive
+  magic-link mail, then narrow `ALLOWED_EMAIL_DOMAINS` back down from the temporary
+  `astanait.edu.kz,gmail.com,icloud.com` to just the university domain.
+- Production hosting on a Kazakhstan-based VPS (BRD data-residency requirement) — everything so far
+  has only run against the local dev Postgres instance on this machine.
+- Optional, "later" per the BRD: swap the chat's polling for Pusher/Socket.io, and build the
+  React Native/Expo app on top of this same backend (would need token-based auth for the API instead
+  of the cookie-based Auth.js session, since a mobile client can't share the browser's cookie jar).

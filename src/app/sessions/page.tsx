@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SessionActions } from "@/components/SessionActions";
 import { ReportButton } from "@/components/ReportButton";
+import { ReviewForm } from "@/components/ReviewForm";
+import { Stars } from "@/components/Stars";
 import type { SessionStatus } from "@prisma/client";
 
 const STATUS_LABEL: Record<SessionStatus, string> = {
@@ -25,6 +27,12 @@ export default async function SessionsPage() {
     },
     orderBy: { dateTime: "desc" },
   });
+
+  const completedIds = sessions.filter((s) => s.status === "COMPLETED").map((s) => s.id);
+  const myReviews = completedIds.length
+    ? await prisma.review.findMany({ where: { authorId: userId, sessionId: { in: completedIds } } })
+    : [];
+  const myReviewBySession = new Map(myReviews.map((r) => [r.sessionId, r]));
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-12">
@@ -70,6 +78,17 @@ export default async function SessionsPage() {
                 canCancel={s.status === "PENDING" || s.status === "ACCEPTED"}
                 canComplete={s.status === "ACCEPTED"}
               />
+              {s.status === "COMPLETED" &&
+                (myReviewBySession.has(s.id) ? (
+                  <div className="flex items-center gap-2 pt-1 text-sm">
+                    <Stars rating={myReviewBySession.get(s.id)!.rating} />
+                    {myReviewBySession.get(s.id)!.text && (
+                      <span className="text-muted">{myReviewBySession.get(s.id)!.text}</span>
+                    )}
+                  </div>
+                ) : (
+                  <ReviewForm sessionId={s.id} />
+                ))}
               <div className="flex items-center gap-3 pt-1">
                 <Link href={`/chat/${other.id}`} className="text-sm text-rose-600 hover:underline dark:text-rose-300">
                   Написать
