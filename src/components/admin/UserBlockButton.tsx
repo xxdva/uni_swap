@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { Dictionary } from "@/lib/i18n/types";
 
-export function UserBlockButton({ userId, isBlocked }: { userId: string; isBlocked: boolean }) {
+export function UserBlockButton({
+  userId,
+  isBlocked,
+  dict,
+}: {
+  userId: string;
+  isBlocked: boolean;
+  dict: Dictionary["admin"];
+}) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
 
@@ -28,7 +37,7 @@ export function UserBlockButton({ userId, isBlocked }: { userId: string; isBlock
           : "rounded-md border border-red-300 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 dark:border-red-900 dark:hover:bg-red-950/30"
       }
     >
-      {isBlocked ? "Разблокировать" : "Заблокировать"}
+      {isBlocked ? dict.unblock : dict.block}
     </button>
   );
 }

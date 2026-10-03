@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { ChatThread } from "@/components/ChatThread";
+import { getDict } from "@/lib/i18n";
 
 export default async function ChatThreadPage({ params }: { params: Promise<{ userId: string }> }) {
-  const session = await auth();
+  const [session, dict] = await Promise.all([auth(), getDict()]);
   const meId = session!.user.id;
   const { userId: otherUserId } = await params;
 
@@ -29,6 +30,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ use
       <ChatThread
         meId={meId}
         otherUserId={otherUserId}
+        dict={dict.chat}
         initialMessages={messages.map((m) => ({
           id: m.id,
           senderId: m.senderId,

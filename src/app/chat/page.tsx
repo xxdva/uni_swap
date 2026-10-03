@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getDict, getLocale, type Locale } from "@/lib/i18n";
+
+const DATE_LOCALE: Record<Locale, string> = { ru: "ru-RU", en: "en-US", kk: "kk-KZ" };
 
 export default async function ChatListPage() {
-  const session = await auth();
+  const [session, dict, locale] = await Promise.all([auth(), getDict(), getLocale()]);
   const userId = session!.user.id;
 
   const messages = await prisma.message.findMany({
@@ -32,15 +35,11 @@ export default async function ChatListPage() {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-12">
       <div>
-        <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">Чат</h1>
-        <p className="mt-1 text-sm text-muted">Переписки с партнёрами по обмену навыками.</p>
+        <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">{dict.chat.listTitle}</h1>
+        <p className="mt-1 text-sm text-muted">{dict.chat.listSubtitle}</p>
       </div>
 
-      {list.length === 0 && (
-        <p className="text-sm text-muted">
-          Пока нет переписок — напишите кому-то со страницы «Совпадения» или «Сессии».
-        </p>
-      )}
+      {list.length === 0 && <p className="text-sm text-muted">{dict.chat.listEmpty}</p>}
 
       <ul className="flex flex-col gap-2">
         {list.map(({ other, lastText, lastAt }) => (
@@ -50,7 +49,9 @@ export default async function ChatListPage() {
                 <p className="font-medium">{other.name ?? other.email}</p>
                 <p className="truncate text-sm text-muted">{lastText}</p>
               </div>
-              <span className="shrink-0 text-xs text-muted">{new Date(lastAt).toLocaleString("ru-RU")}</span>
+              <span className="shrink-0 text-xs text-muted">
+                {new Date(lastAt).toLocaleString(DATE_LOCALE[locale])}
+              </span>
             </Link>
           </li>
         ))}

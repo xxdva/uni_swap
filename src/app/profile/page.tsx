@@ -2,9 +2,10 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SkillsManager } from "@/components/SkillsManager";
 import { Stars } from "@/components/Stars";
+import { format, getDict } from "@/lib/i18n";
 
 export default async function ProfilePage() {
-  const session = await auth();
+  const [session, dict] = await Promise.all([auth(), getDict()]);
   const userId = session!.user.id;
 
   const [userSkills, receivedReviews] = await Promise.all([
@@ -33,20 +34,18 @@ export default async function ProfilePage() {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-10 px-6 py-12">
       <div>
-        <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">Мой профиль</h1>
+        <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">{dict.profile.title}</h1>
         <p className="mt-1 text-sm text-muted">{session!.user.email}</p>
       </div>
 
-      <SkillsManager type="OFFER" title="Я умею" items={offered} />
-      <SkillsManager type="WANT" title="Хочу научиться" items={wanted} />
+      <SkillsManager type="OFFER" title={dict.profile.offerTitle} items={offered} dict={dict.skills} />
+      <SkillsManager type="WANT" title={dict.profile.wantTitle} items={wanted} dict={dict.skills} />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">
-          Отзывы обо мне {avgRating !== null && <Stars rating={avgRating} />}
+          {dict.profile.reviewsTitle} {avgRating !== null && <Stars rating={avgRating} />}
         </h2>
-        {receivedReviews.length === 0 && (
-          <p className="text-sm text-muted">Пока нет отзывов — они появятся после завершённых сессий.</p>
-        )}
+        {receivedReviews.length === 0 && <p className="text-sm text-muted">{dict.profile.noReviews}</p>}
         <ul className="flex flex-col gap-2">
           {receivedReviews.map((r) => (
             <li key={r.id} className="card flex flex-col gap-1">
@@ -55,7 +54,8 @@ export default async function ProfilePage() {
                 <Stars rating={r.rating} />
               </div>
               <p className="text-sm text-muted">
-                За сессию по «{r.session.skill.name}»{r.text ? `: ${r.text}` : ""}
+                {format(dict.profile.reviewFor, { skill: r.session.skill.name })}
+                {r.text ? `: ${r.text}` : ""}
               </p>
             </li>
           ))}

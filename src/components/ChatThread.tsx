@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import type { Dictionary } from "@/lib/i18n/types";
 
 type Message = { id: string; senderId: string; text: string; createdAt: string };
 
@@ -10,10 +11,12 @@ export function ChatThread({
   meId,
   otherUserId,
   initialMessages,
+  dict,
 }: {
   meId: string;
   otherUserId: string;
   initialMessages: Message[];
+  dict: Dictionary["chat"];
 }) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [text, setText] = useState("");
@@ -68,7 +71,7 @@ export function ChatThread({
   return (
     <div className="flex flex-1 flex-col gap-3">
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
-        {messages.length === 0 && <p className="text-sm text-muted">Сообщений пока нет — начните переписку.</p>}
+        {messages.length === 0 && <p className="text-sm text-muted">{dict.threadEmpty}</p>}
         {messages.map((m) => {
           const isMine = m.senderId === meId;
           return (
@@ -91,11 +94,11 @@ export function ChatThread({
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Написать сообщение…"
+          placeholder={dict.messagePlaceholder}
           className="input-field flex-1"
         />
         <button type="submit" disabled={sending} className="btn-primary px-4 py-2">
-          Отправить
+          {dict.send}
         </button>
       </form>
     </div>

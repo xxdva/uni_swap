@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { format } from "@/lib/i18n/format";
+import type { Dictionary } from "@/lib/i18n/types";
 
 type Level = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 type SkillType = "OFFER" | "WANT";
@@ -12,26 +14,28 @@ type UserSkillItem = {
   skill: { id: string; name: string };
 };
 
-const LEVEL_LABEL: Record<Level, string> = {
-  BEGINNER: "начальный",
-  INTERMEDIATE: "средний",
-  ADVANCED: "продвинутый",
-};
-
 export function SkillsManager({
   type,
   title,
   items,
+  dict,
 }: {
   type: SkillType;
   title: string;
   items: UserSkillItem[];
+  dict: Dictionary["skills"];
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [level, setLevel] = useState<Level>("BEGINNER");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const LEVEL_LABEL: Record<Level, string> = {
+    BEGINNER: dict.levelBeginner,
+    INTERMEDIATE: dict.levelIntermediate,
+    ADVANCED: dict.levelAdvanced,
+  };
 
   async function addSkill(e: FormEvent) {
     e.preventDefault();
@@ -48,7 +52,7 @@ export function SkillsManager({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error === "already_added" ? "Этот навык уже добавлен" : "Не удалось добавить навык");
+        setError(data.error === "already_added" ? dict.alreadyAdded : dict.addError);
         return;
       }
 
@@ -76,21 +80,21 @@ export function SkillsManager({
             <button
               type="button"
               onClick={() => removeSkill(item.id)}
-              aria-label={`Удалить ${item.skill.name}`}
+              aria-label={format(dict.removeLabel, { name: item.skill.name })}
               className="text-rose-400 hover:text-red-600"
             >
               ×
             </button>
           </li>
         ))}
-        {items.length === 0 && <li className="text-sm text-muted">Пока пусто</li>}
+        {items.length === 0 && <li className="text-sm text-muted">{dict.empty}</li>}
       </ul>
 
       <form onSubmit={addSkill} className="flex flex-wrap items-center gap-2">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Например, Figma"
+          placeholder={dict.namePlaceholder}
           className="input-field py-1.5"
         />
         <select
@@ -98,12 +102,12 @@ export function SkillsManager({
           onChange={(e) => setLevel(e.target.value as Level)}
           className="input-field py-1.5"
         >
-          <option value="BEGINNER">начальный</option>
-          <option value="INTERMEDIATE">средний</option>
-          <option value="ADVANCED">продвинутый</option>
+          <option value="BEGINNER">{dict.levelBeginner}</option>
+          <option value="INTERMEDIATE">{dict.levelIntermediate}</option>
+          <option value="ADVANCED">{dict.levelAdvanced}</option>
         </select>
         <button type="submit" disabled={pending} className="btn-primary px-3 py-1.5">
-          Добавить
+          {dict.add}
         </button>
       </form>
       {error && <p className="text-sm text-red-600">{error}</p>}

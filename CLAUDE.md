@@ -5,17 +5,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 Uni Swap — a peer skill-exchange platform for Astana IT University students (registration
-restricted to `@astanait.edu.kz`). This repo implements the MVP scope (BR1–BR5 from the BRD):
-domain-restricted signup with consent tracking, skill profiles (offer/want), matching, session
-requests, a polling-based chat, and admin moderation (block users, resolve reports). Reviews on
-completed sessions are the one BRD item still not built. A React Native/Expo mobile app is planned
-later, reusing this backend — the web
-app is built responsive/PWA-ready for that reason. Production must be hosted on a Kazakhstan-based
-VPS (personal-data residency requirement from the BRD); Vercel/Supabase-style hosting is fine for
-development only.
+restricted to `@astanait.edu.kz`, plus `gmail.com`/`icloud.com` temporarily — see
+`ALLOWED_EMAIL_DOMAINS` below). This repo implements the full MVP scope from the BRD (BR1–BR5 plus
+admin moderation): domain-restricted signup with consent tracking, skill profiles (offer/want),
+matching, session requests, a polling-based chat, reviews on completed sessions, and admin
+moderation (block users, resolve reports). The UI is translated into Russian/English/Kazakh via a
+cookie-based switcher (no URL routing). A React Native/Expo mobile app is planned later, reusing
+this backend — the web app is built responsive/PWA-ready for that reason. Production must be
+hosted on a Kazakhstan-based VPS (personal-data residency requirement from the BRD); it currently
+runs on Vercel + Neon, which the BRD calls out as fine for development only, not the final home.
 
-Stack: Next.js (App Router, Turbopack) + Prisma + PostgreSQL + Auth.js v5 (email magic links via
-Resend) + Tailwind.
+Stack: Next.js (App Router, Turbopack) + Prisma + PostgreSQL (Neon in production) + Auth.js v5
+(email magic links via Resend) + Tailwind.
 
 ## Commands
 
@@ -162,6 +163,38 @@ requester/partner isn't the caller" — the client never sends it. `/sessions` s
 for each `COMPLETED` session the current user hasn't reviewed yet, or the existing review (via the
 shared `Stars` component) once they have. `/profile` separately shows reviews *received* — a plain
 average of `Review.rating` where `targetId` = the viewed user, computed in the page, not stored.
+
+## Internationalization
+
+Russian/English/Kazakh, switched by a button in `Nav` (`LanguageSwitcher`) — **no URL locale
+prefix** (`/matches` stays `/matches` in every language); the choice lives in a plain `lang` cookie.
+This was a deliberate tradeoff over `next-intl`-style `[locale]` routing: it avoids touching
+`src/proxy.ts`'s matchers or restructuring every route under a locale segment, at the cost of the
+language not being reflected in the URL or indexable per-locale — fine for an app that's entirely
+behind auth anyway.
+
+`src/lib/i18n/` has a hard split that matters:
+- `types.ts` (the `Dictionary`/`Locale` types) and `format.ts` (a `{token}` → value templater, since
+  dictionary values must stay plain strings — functions aren't serializable across the Server→Client
+  Component boundary) and `constants.ts` (`LOCALES`, `DEFAULT_LOCALE`) have **no** `next/headers`
+  import and are safe for Client Components.
+- `index.ts` (the barrel: `getLocale()`, `getDict()`, `getDictionary()`) imports `next/headers`
+  (`cookies()`) and is **Server-Component-only**. A Client Component must import `Dictionary`/`Locale`
+  from `@/lib/i18n/types`, `format` from `@/lib/i18n/format`, `LOCALES` from `@/lib/i18n/constants` —
+  importing any of those from the `@/lib/i18n` barrel instead pulls `next/headers` into the client
+  bundle and fails the build (hit this exact error once; see `RegisterForm.tsx` for the working
+  pattern). Every page is a Server Component that calls `getDict()` (and `getLocale()` where it also
+  needs the raw code, e.g. for `Date#toLocaleString`) and passes the relevant `dict.<section>` slice
+  down as a prop — there's no `useTranslations()`-style hook, just props.
+- `ru.ts`/`en.ts`/`kk.ts` each implement the full `Dictionary` shape. Adding a UI string means adding
+  the key to `types.ts` and all three language files — TypeScript will flag a missing key via the
+  `Dictionary` type, so there's no silent "forgot to translate one language" failure mode.
+
+`register`'s domain-not-allowed error is deliberately **not** read from the API's response body —
+`RegisterForm` reconstructs it client-side from `dict.register.domainError` + its own hardcoded
+`DISPLAY_DOMAINS` list, because `/api/register`'s error message is plain Russian with no locale
+awareness. Follow that pattern (client-side message, not server `data.message`) for any other
+API error that needs to show translated text, rather than localizing the API routes themselves.
 
 ## Not yet built
 

@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import type { Dictionary } from "@/lib/i18n/types";
 
-export function ReportButton({ targetId }: { targetId: string }) {
+export function ReportButton({ targetId, dict }: { targetId: string; dict: Dictionary["report"] }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [sent, setSent] = useState(false);
   const [pending, setPending] = useState(false);
 
-  if (sent) return <span className="text-xs text-muted">Жалоба отправлена</span>;
+  if (sent) return <span className="text-xs text-muted">{dict.sent}</span>;
 
   if (!open) {
     return (
@@ -17,7 +18,7 @@ export function ReportButton({ targetId }: { targetId: string }) {
         onClick={() => setOpen(true)}
         className="text-xs text-rose-400 hover:text-red-600"
       >
-        Пожаловаться
+        {dict.button}
       </button>
     );
   }
@@ -42,7 +43,7 @@ export function ReportButton({ targetId }: { targetId: string }) {
       <input
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        placeholder="Причина жалобы"
+        placeholder={dict.reasonPlaceholder}
         className="input-field py-1 text-xs"
       />
       <button
@@ -51,7 +52,7 @@ export function ReportButton({ targetId }: { targetId: string }) {
         onClick={submit}
         className="rounded-md border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50 dark:border-red-900 dark:hover:bg-red-950/30"
       >
-        Отправить
+        {dict.submit}
       </button>
     </div>
   );
