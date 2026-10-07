@@ -14,6 +14,7 @@ export type Dictionary = {
     description: string;
     ctaLoggedIn: string;
     ctaLoggedOut: string;
+    toolsLabel: string;
   };
   register: {
     title: string;

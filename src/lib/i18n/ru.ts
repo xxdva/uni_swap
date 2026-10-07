@@ -15,6 +15,7 @@ export const ru: Dictionary = {
       "Обменивайтесь навыками с другими студентами: научите тому, что умеете, и найдите того, кто научит вас.",
     ctaLoggedIn: "Смотреть совпадения",
     ctaLoggedOut: "Начать",
+    toolsLabel: "Чему здесь учатся",
   },
   register: {
     title: "Вход в Uni Swap",

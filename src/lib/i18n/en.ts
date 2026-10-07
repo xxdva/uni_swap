@@ -14,6 +14,7 @@ export const en: Dictionary = {
     description: "Exchange skills with fellow students: teach what you know, and find someone to teach you.",
     ctaLoggedIn: "View matches",
     ctaLoggedOut: "Get started",
+    toolsLabel: "Skills people teach here",
   },
   register: {
     title: "Sign in to Uni Swap",
