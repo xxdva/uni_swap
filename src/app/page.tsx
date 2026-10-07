@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/auth";
 import { getDict } from "@/lib/i18n";
-import { ExcelIcon, FigmaIcon, PowerBiIcon, PythonIcon, WordIcon } from "@/components/ToolIcons";
 
 export default async function Home() {
   const [session, dict] = await Promise.all([auth(), getDict()]);
@@ -15,17 +14,6 @@ export default async function Home() {
       <Link href={session?.user ? "/matches" : "/register"} className="btn-primary px-5 py-2.5">
         {session?.user ? dict.home.ctaLoggedIn : dict.home.ctaLoggedOut}
       </Link>
-
-      <div className="mt-10 flex flex-col items-center gap-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted">{dict.home.toolsLabel}</p>
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <PythonIcon />
-          <PowerBiIcon />
-          <FigmaIcon />
-          <ExcelIcon />
-          <WordIcon />
-        </div>
-      </div>
     </main>
   );
 }

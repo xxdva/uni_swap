@@ -5,7 +5,8 @@ import { SessionActions } from "@/components/SessionActions";
 import { ReportButton } from "@/components/ReportButton";
 import { ReviewForm } from "@/components/ReviewForm";
 import { Stars } from "@/components/Stars";
-import { format, getDict, getLocale, type Locale } from "@/lib/i18n";
+import { getDict, getLocale, type Locale } from "@/lib/i18n";
+import { getSkillIcon } from "@/components/ToolIcons";
 import type { SessionStatus } from "@prisma/client";
 
 const DATE_LOCALE: Record<Locale, string> = { ru: "ru-RU", en: "en-US", kk: "kk-KZ" };
@@ -51,6 +52,9 @@ export default async function SessionsPage() {
           const isRequester = s.requesterId === userId;
           const other = isRequester ? s.partner : s.requester;
           const template = isRequester ? dict.sessions.youProposed : dict.sessions.theyProposed;
+          const dateText = new Date(s.dateTime).toLocaleString(DATE_LOCALE[locale]);
+          const [beforeSkill, rest] = template.split("{skill}");
+          const [betweenSkillAndDate, afterDate] = rest.split("{date}");
 
           return (
             <li key={s.id} className="card flex flex-col gap-1">
@@ -58,11 +62,15 @@ export default async function SessionsPage() {
                 <span className="font-medium">{other.name ?? other.email}</span>
                 <span className="text-xs text-muted">{STATUS_LABEL[s.status]}</span>
               </div>
-              <p className="text-sm text-muted">
-                {format(template, {
-                  skill: s.skill.name,
-                  date: new Date(s.dateTime).toLocaleString(DATE_LOCALE[locale]),
-                })}
+              <p className="flex flex-wrap items-center gap-1 text-sm text-muted">
+                <span>{beforeSkill}</span>
+                {getSkillIcon(s.skill.name, 16)}
+                <span>
+                  {s.skill.name}
+                  {betweenSkillAndDate}
+                  {dateText}
+                  {afterDate}
+                </span>
               </p>
               {s.meetingLink && (
                 <a

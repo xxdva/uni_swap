@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "@/lib/i18n/format";
 import type { Dictionary } from "@/lib/i18n/types";
+import { getSkillIcon } from "@/components/ToolIcons";
 
 type Level = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 type SkillType = "OFFER" | "WANT";
@@ -75,6 +76,7 @@ export function SkillsManager({
       <ul className="flex flex-wrap gap-2">
         {items.map((item) => (
           <li key={item.id} className="pill">
+            {getSkillIcon(item.skill.name, 18)}
             <span>{item.skill.name}</span>
             <span className="text-rose-400">· {LEVEL_LABEL[item.level]}</span>
             <button
