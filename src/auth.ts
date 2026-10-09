@@ -48,7 +48,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as "STUDENT" | "ADMIN";
+        session.user.role = token.role as "STUDENT" | "MENTOR" | "ADMIN";
         session.user.isBlocked = token.isBlocked as boolean;
       }
       return session;
