@@ -98,10 +98,9 @@ keeps the "<3s for 1000 users" requirement trivially true. Keep it as one query 
 `theyWantFromMe` as `{id, name}[]` (not just names) — the ids are what `RequestSessionForm` needs to
 create a `SkillSession` for a specific overlapping skill, so don't drop them back to plain strings.
 
-**Skills** — `Skill` is a shared, deduped catalog; `UserSkill` links a user to a skill with a
-`type` (`OFFER`/`WANT`) and `level`, unique per `(userId, skillId, type)`. Typing a skill name not
-yet in the catalog creates it on the fly (`src/app/api/profile/skills/route.ts`, `Skill.upsert` by
-name) — there's no admin approval step for new catalog entries yet.
+**Skills** — `Skill` is a shared catalog; `UserSkill` links a user to a skill with a `type` (`OFFER`/`WANT`) and `level`, unique per `(userId, skillId, type)`. Free-text skill entry is **disabled**: the profile shows catalog cards (`SkillsManager`, search + category filter) and `POST /api/profile/skills` takes a `skillId` that must already exist. New catalog entries go in `prisma/skills-catalog.ts` and are loaded with `npm run seed:skills` (idempotent, catalog only — unlike `npm run seed`, which also creates demo users).
+
+**Roles & certificates** — the role (`STUDENT` shown as "Юзер" / `MENTOR` / `ADMIN`) is chosen on `/register` and applied only when the account is first created (re-registering never changes it). There is no mentor-application flow any more. Users upload certificates (PDF/JPG/PNG, ≤3 MB, stored as `Certificate.data` bytes, type sniffed from magic bytes) in `/profile`; `MENTOR`/`ADMIN` review them via `CertificateReviewQueue` on `/mentor` and `/admin` (`POST /api/certificates/[id]/review`, reviewers cannot review their own). An `APPROVED` certificate linked to a skill makes that skill count as verified (`src/lib/verification.ts`). NOTE: because anyone can self-select ADMIN at signup, this is not real access control.
 
 **Session requests (BR4, `SkillSession`)** — created from `/matches` (`RequestSessionForm`) via
 `POST /api/sessions`, always `requesterId` = the person clicking, `partnerId` = the match, `skillId`

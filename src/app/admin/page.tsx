@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { UserBlockButton } from "@/components/admin/UserBlockButton";
 import { ReportActions } from "@/components/admin/ReportActions";
-import { MentorApplicationActions } from "@/components/admin/MentorApplicationActions";
+import { CertificateReviewQueue } from "@/components/CertificateReviewQueue";
 import { Avatar } from "@/components/Avatar";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -20,7 +20,7 @@ export default async function AdminPage() {
     DISMISSED: dict.admin.reportDismissed,
   };
 
-  const [users, reports, mentorApplications] = await Promise.all([
+  const [users, reports, pendingCertificates] = await Promise.all([
     prisma.user.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.report.findMany({
       include: {
@@ -29,11 +29,7 @@ export default async function AdminPage() {
       },
       orderBy: [{ status: "asc" }, { createdAt: "desc" }],
     }),
-    prisma.mentorApplication.findMany({
-      where: { status: "PENDING" },
-      include: { user: { select: { id: true, name: true, email: true } } },
-      orderBy: { createdAt: "asc" },
-    }),
+    prisma.certificate.count({ where: { status: "PENDING", userId: { not: admin.user.id } } }),
   ]);
 
   const blockedCount = users.filter((u) => u.isBlocked).length;
@@ -50,27 +46,10 @@ export default async function AdminPage() {
         <StatCard label={dict.admin.statsUsers} value={users.length} />
         <StatCard label={dict.admin.statsBlocked} value={blockedCount} />
         <StatCard label={dict.admin.statsOpenReports} value={openReportsCount} />
-        <StatCard label={dict.admin.statsPendingApplications} value={mentorApplications.length} />
+        <StatCard label={dict.admin.statsPendingCertificates} value={pendingCertificates} />
       </div>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">
-          {format(dict.admin.mentorApplicationsTitle, { count: mentorApplications.length })}
-        </h2>
-        {mentorApplications.length === 0 && <EmptyState>{dict.admin.noMentorApplications}</EmptyState>}
-        <ul className="flex flex-col gap-2">
-          {mentorApplications.map((a) => (
-            <li key={a.id} className="card flex flex-col gap-2">
-              <span className="flex items-center gap-2 font-medium">
-                <Avatar name={a.user.name} email={a.user.email} size={28} />
-                {a.user.name ?? a.user.email}
-              </span>
-              {a.message && <p className="text-sm text-muted">{a.message}</p>}
-              <MentorApplicationActions applicationId={a.id} dict={dict.admin} />
-            </li>
-          ))}
-        </ul>
-      </section>
+      <CertificateReviewQueue reviewerId={admin.user.id} dict={dict.certs} />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">

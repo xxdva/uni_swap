@@ -12,6 +12,10 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/blocked", req.url));
   }
 
+  if (req.nextUrl.pathname.startsWith("/mentor") && req.auth?.user?.role !== "MENTOR") {
+    return NextResponse.redirect(new URL("/profile", req.url));
+  }
+
   if (req.nextUrl.pathname.startsWith("/admin") && req.auth?.user?.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", req.url));
   }

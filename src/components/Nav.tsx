@@ -33,9 +33,11 @@ export async function Nav() {
             <Link href="/chat" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
               {dict.nav.chat}
             </Link>
+            {session.user.role === "MENTOR" && (
             <Link href="/mentor" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
               {dict.nav.mentor}
             </Link>
+            )}
             {session.user.role === "ADMIN" && (
               <Link href="/admin" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
                 {dict.nav.admin}

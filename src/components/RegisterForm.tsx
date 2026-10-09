@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { format } from "@/lib/i18n/format";
 import type { Dictionary } from "@/lib/i18n/types";
 
+type Role = "STUDENT" | "MENTOR" | "ADMIN";
+
 export function RegisterForm({
   dict,
   allowedDomains,
@@ -17,6 +19,7 @@ export function RegisterForm({
   const domainsText = isOpen ? "" : allowedDomains.map((d) => `@${d}`).join(", ");
   const placeholderDomain = isOpen ? "example.com" : allowedDomains[0];
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState<Role>("STUDENT");
   const [consent, setConsent] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +38,7 @@ export function RegisterForm({
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, consent }),
+        body: JSON.stringify({ email, role, consent }),
       });
       const data = await res.json();
 
@@ -53,6 +56,12 @@ export function RegisterForm({
       setPending(false);
     }
   }
+
+  const roles: { value: Role; label: string; desc: string }[] = [
+    { value: "STUDENT", label: dict.roleUser, desc: dict.roleUserDesc },
+    { value: "MENTOR", label: dict.roleMentor, desc: dict.roleMentorDesc },
+    { value: "ADMIN", label: dict.roleAdmin, desc: dict.roleAdminDesc },
+  ];
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-6">
@@ -75,6 +84,31 @@ export function RegisterForm({
             className="input-field"
           />
         </label>
+
+        <fieldset className="flex flex-col gap-2 text-sm">
+          <legend className="mb-1">{dict.roleLabel}</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {roles.map((r) => (
+              <label
+                key={r.value}
+                className={`card flex cursor-pointer flex-col gap-0.5 p-3 ${
+                  role === r.value ? "border-rose-500 ring-2 ring-rose-300" : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value={r.value}
+                  checked={role === r.value}
+                  onChange={() => setRole(r.value)}
+                  className="sr-only"
+                />
+                <span className="font-medium text-rose-700 dark:text-rose-200">{r.label}</span>
+                <span className="text-xs text-muted">{r.desc}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         <label className="flex items-start gap-2 text-sm">
           <input

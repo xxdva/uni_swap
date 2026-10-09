@@ -6,6 +6,9 @@ import { signIn } from "@/auth";
 
 const schema = z.object({
   email: z.string().email(),
+  // Роль выбирается при первой регистрации; у уже существующих аккаунтов
+  // она не меняется (иначе любой мог бы повысить себя повторной регистрацией).
+  role: z.enum(["STUDENT", "MENTOR", "ADMIN"]).default("STUDENT"),
   consent: z.boolean().refine((v) => v === true, {
     message: "Нужно согласие на обработку персональных данных",
   }),
@@ -43,7 +46,7 @@ export async function POST(req: Request) {
   // момент согласия на обработку данных вместе с самой регистрацией.
   await prisma.user.upsert({
     where: { email },
-    create: { email, consentAt: new Date() },
+    create: { email, role: parsed.data.role, consentAt: new Date() },
     update: existing?.emailVerified ? {} : { consentAt: new Date() },
   });
 

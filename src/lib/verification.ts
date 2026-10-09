@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 
-// Порог «подтверждённого» навыка (BR: доверие без ручной загрузки
-// сертификатов на MVP) — автоматически, по факту завершённых сессий и
-// оценкам. Не хранится в БД, считается на лету: завершённых сессий по
+// Навык считается «подтверждённым», если (а) по нему есть сертификат,
+// одобренный ментором/админом, либо (б) автоматически — по факту
+// завершённых сессий и оценкам. Не хранится в БД, считается на лету: завершённых сессий по
 // навыку должно быть не меньше MIN_SESSIONS, а средняя оценка отзывов,
 // оставленных за эти сессии, — не ниже MIN_RATING.
 const MIN_SESSIONS = 2;
@@ -15,6 +15,16 @@ export async function getVerifiedSkillIdsForUsers(userIds: string[]): Promise<Ma
   const result = new Map<string, Set<string>>();
   if (userIds.length === 0) return result;
   const userIdSet = new Set(userIds);
+
+  const approvedCertificates = await prisma.certificate.findMany({
+    where: { userId: { in: userIds }, status: "APPROVED", skillId: { not: null } },
+    select: { userId: true, skillId: true },
+  });
+  for (const { userId, skillId } of approvedCertificates) {
+    const set = result.get(userId) ?? new Set<string>();
+    set.add(skillId!);
+    result.set(userId, set);
+  }
 
   const offered = await prisma.userSkill.findMany({
     where: { userId: { in: userIds }, type: "OFFER" },

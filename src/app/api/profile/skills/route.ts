@@ -3,8 +3,10 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
+// Навыки выбираются только из общего каталога (карточки в профиле) —
+// свободный ввод отключён, поэтому принимаем skillId, а не название.
 const schema = z.object({
-  skillName: z.string().trim().min(1).max(60),
+  skillId: z.string().min(1),
   type: z.enum(["OFFER", "WANT"]),
   level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
 });
@@ -21,14 +23,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_input", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { skillName, type, level } = parsed.data;
+  const { skillId, type, level } = parsed.data;
 
-  // Каталог навыков общий для всех — находим существующий или заводим новый.
-  const skill = await prisma.skill.upsert({
-    where: { name: skillName },
-    create: { name: skillName },
-    update: {},
-  });
+  const skill = await prisma.skill.findUnique({ where: { id: skillId } });
+  if (!skill) {
+    return NextResponse.json({ error: "skill_not_found" }, { status: 404 });
+  }
 
   try {
     const userSkill = await prisma.userSkill.create({

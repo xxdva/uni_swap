@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SkillsManager } from "@/components/SkillsManager";
+import { CertificatesManager } from "@/components/CertificatesManager";
 import { Stars } from "@/components/Stars";
 import { Avatar } from "@/components/Avatar";
 import { StatCard } from "@/components/StatCard";
@@ -11,7 +12,20 @@ export default async function ProfilePage() {
   const [session, dict] = await Promise.all([auth(), getDict()]);
   const userId = session!.user.id;
 
-  const [userSkills, receivedReviews] = await Promise.all([
+  const [catalog, certificates, userSkills, receivedReviews] = await Promise.all([
+    prisma.skill.findMany({ select: { id: true, name: true, category: true }, orderBy: [{ category: "asc" }, { name: "asc" }] }),
+    prisma.certificate.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        reviewNote: true,
+        skill: { select: { name: true } },
+        reviewer: { select: { name: true, email: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
     prisma.userSkill.findMany({
       where: { userId },
       include: { skill: true },
@@ -51,8 +65,21 @@ export default async function ProfilePage() {
         <StatCard label={dict.profile.statsReviews} value={receivedReviews.length} />
       </div>
 
-      <SkillsManager type="OFFER" title={dict.profile.offerTitle} items={offered} dict={dict.skills} />
-      <SkillsManager type="WANT" title={dict.profile.wantTitle} items={wanted} dict={dict.skills} />
+      <SkillsManager type="OFFER" title={dict.profile.offerTitle} items={offered} catalog={catalog} dict={dict.skills} />
+      <SkillsManager type="WANT" title={dict.profile.wantTitle} items={wanted} catalog={catalog} dict={dict.skills} />
+
+      <CertificatesManager
+        items={certificates.map((c) => ({
+          id: c.id,
+          title: c.title,
+          status: c.status,
+          reviewNote: c.reviewNote,
+          skillName: c.skill?.name ?? null,
+          reviewerName: c.reviewer ? (c.reviewer.name ?? c.reviewer.email) : null,
+        }))}
+        skills={catalog.map((s) => ({ id: s.id, name: s.name }))}
+        dict={dict.certs}
+      />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">

@@ -68,7 +68,7 @@ enum Role {
   ADMIN
 }
 
-enum MentorApplicationStatus {
+enum CertificateStatus {
   PENDING
   APPROVED
   REJECTED
@@ -129,20 +129,32 @@ model User {
   reportsFiled    Report[] @relation("ReportReporter")
   reportsReceived Report[] @relation("ReportTarget")
 
-  mentorApplications MentorApplication[]
+  certificates         Certificate[] @relation("CertificateOwner")
+  certificatesReviewed Certificate[] @relation("CertificateReviewer")
 
   @@index([role])
 }
 
-model MentorApplication {
-  id        String                   @id @default(cuid())
-  userId    String
-  status    MentorApplicationStatus  @default(PENDING)
-  message   String?
-  createdAt DateTime                 @default(now())
-  updatedAt DateTime                 @updatedAt
+// Сертификат, который пользователь загружает в профиле в подтверждение навыка.
+// Файл хранится прямо в БД (Bytes, до 3 МБ) — без внешнего хранилища, чтобы
+// работало одинаково локально, на Vercel и на VPS. Проверяют менторы и админы.
+model Certificate {
+  id         String            @id @default(cuid())
+  userId     String
+  skillId    String?
+  title      String
+  fileName   String
+  mimeType   String
+  data       Bytes
+  status     CertificateStatus @default(PENDING)
+  reviewerId String?
+  reviewNote String?
+  reviewedAt DateTime?
+  createdAt  DateTime          @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User   @relation("CertificateOwner", fields: [userId], references: [id], onDelete: Cascade)
+  reviewer User?  @relation("CertificateReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  skill    Skill? @relation(fields: [skillId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([status])
@@ -156,6 +168,7 @@ model Skill {
 
   userSkills    UserSkill[]
   skillSessions SkillSession[]
+  certificates  Certificate[]
 }
 
 model UserSkill {
@@ -197,11 +210,11 @@ model SkillSession {
 }
 
 model Message {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   senderId   String
   receiverId String
   text       String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now())
   readAt     DateTime?
 
   sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)

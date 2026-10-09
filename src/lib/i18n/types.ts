@@ -35,6 +35,13 @@ export type Dictionary = {
     genericError: string;
     networkError: string;
     domainError: string;
+    roleLabel: string;
+    roleUser: string;
+    roleUserDesc: string;
+    roleMentor: string;
+    roleMentorDesc: string;
+    roleAdmin: string;
+    roleAdminDesc: string;
   };
   checkEmail: { title: string; body: string };
   blocked: { title: string; body: string };
@@ -52,7 +59,6 @@ export type Dictionary = {
   };
   skills: {
     empty: string;
-    namePlaceholder: string;
     levelBeginner: string;
     levelIntermediate: string;
     levelAdvanced: string;
@@ -60,6 +66,12 @@ export type Dictionary = {
     alreadyAdded: string;
     addError: string;
     removeLabel: string;
+    searchPlaceholder: string;
+    allCategories: string;
+    pickHint: string;
+    noResults: string;
+    addedMark: string;
+    levelLabel: string;
   };
   matches: {
     title: string;
@@ -137,14 +149,10 @@ export type Dictionary = {
     reportOpen: string;
     reportResolved: string;
     reportDismissed: string;
-    mentorApplicationsTitle: string;
-    noMentorApplications: string;
-    mentorApprove: string;
-    mentorReject: string;
     statsUsers: string;
     statsBlocked: string;
     statsOpenReports: string;
-    statsPendingApplications: string;
+    statsPendingCertificates: string;
   };
   mentor: {
     title: string;
@@ -153,20 +161,37 @@ export type Dictionary = {
     statsSessions: string;
     verifiedSkillsTitle: string;
     noVerifiedSkills: string;
-    applyTitle: string;
-    applyDescription: string;
-    applyMessagePlaceholder: string;
-    applySubmit: string;
-    applyPending: string;
-    applyRejected: string;
-    applyError: string;
     verifiedLabel: string;
-    benefit1Title: string;
-    benefit1Desc: string;
-    benefit2Title: string;
-    benefit2Desc: string;
-    benefit3Title: string;
-    benefit3Desc: string;
+    reviewHint: string;
+  };
+  certs: {
+    title: string;
+    subtitle: string;
+    titleLabel: string;
+    titlePlaceholder: string;
+    skillLabel: string;
+    skillNone: string;
+    fileLabel: string;
+    upload: string;
+    uploading: string;
+    uploadError: string;
+    tooBig: string;
+    badType: string;
+    empty: string;
+    statusPending: string;
+    statusApproved: string;
+    statusRejected: string;
+    view: string;
+    delete: string;
+    noteLabel: string;
+    reviewTitle: string;
+    reviewEmpty: string;
+    approve: string;
+    reject: string;
+    notePlaceholder: string;
+    uploadedBy: string;
+    forSkill: string;
+    reviewedBy: string;
   };
   notifications: {
     label: string;
