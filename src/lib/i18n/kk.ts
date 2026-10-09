@@ -16,6 +16,12 @@ export const kk: Dictionary = {
       "Басқа студенттермен дағдыларыңызбен алмасыңыз: білетініңізді үйретіңіз және өзіңізді үйрететін адамды табыңыз.",
     ctaLoggedIn: "Сәйкестіктерді қарау",
     ctaLoggedOut: "Бастау",
+    feature1Title: "Дағдылар бойынша сәйкестендіру",
+    feature1Desc: "Жүйе сіз үйрететін нәрсені үйренгісі келетіндерді өзі тауып береді — және керісінше.",
+    feature2Title: "Чат және келісу",
+    feature2Desc: "Кездесу уақыты мен форматын тікелей қолданба ішінде келісіп алыңыз.",
+    feature3Title: "Пікірлер және рейтинг",
+    feature3Desc: "Әр сессиядан кейін қатысушылар пікір қалдырады — осылай қоғамдастықта сенім артады.",
   },
   register: {
     title: "Uni Swap-қа кіру",
@@ -45,6 +51,10 @@ export const kk: Dictionary = {
     reviewsTitle: "Мен туралы пікірлер",
     noReviews: "Әзірге пікірлер жоқ — олар аяқталған сессиялардан кейін пайда болады.",
     reviewFor: "«{skill}» бойынша сессия үшін",
+    statsOffered: "Ұсынылған дағдылар",
+    statsWanted: "Қалаған дағдылар",
+    statsRating: "Орташа рейтинг",
+    statsReviews: "Алынған пікірлер",
   },
   skills: {
     empty: "Әзірге бос",
@@ -65,6 +75,8 @@ export const kk: Dictionary = {
     canTeach: "Үйрете алады: {skills}",
     wantsFromYou: "Сізден үйренгісі келеді: {skills}",
     write: "Жазу",
+    statsTotal: "Сәйкестіктер",
+    statsMutual: "Өзара",
   },
   requestSession: {
     wantToLearnGroup: "Үйренгім келеді",
@@ -86,6 +98,9 @@ export const kk: Dictionary = {
     theyProposed: "Сізге «{skill}» бойынша сессия ұсынылды — {date}",
     meetingLink: "Кездесу сілтемесі",
     write: "Жазу",
+    statsTotal: "Барлық сессиялар",
+    statsCompleted: "Аяқталды",
+    statsPending: "Күтуде",
   },
   sessionActions: {
     meetingLinkPlaceholder: "Кездесу сілтемесі (міндетті емес)",

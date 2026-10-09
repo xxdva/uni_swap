@@ -2,6 +2,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SkillsManager } from "@/components/SkillsManager";
 import { Stars } from "@/components/Stars";
+import { Avatar } from "@/components/Avatar";
+import { StatCard } from "@/components/StatCard";
+import { EmptyState } from "@/components/EmptyState";
 import { format, getDict } from "@/lib/i18n";
 
 export default async function ProfilePage() {
@@ -32,10 +35,20 @@ export default async function ProfilePage() {
       : null;
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-10 px-6 py-12">
-      <div>
-        <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">{dict.profile.title}</h1>
-        <p className="mt-1 text-sm text-muted">{session!.user.email}</p>
+    <main className="mx-auto flex max-w-3xl flex-col gap-10 px-6 py-12">
+      <div className="flex items-center gap-4">
+        <Avatar name={session!.user.name} email={session!.user.email!} size={56} />
+        <div>
+          <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">{dict.profile.title}</h1>
+          <p className="mt-1 text-sm text-muted">{session!.user.email}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatCard label={dict.profile.statsOffered} value={offered.length} />
+        <StatCard label={dict.profile.statsWanted} value={wanted.length} />
+        <StatCard label={dict.profile.statsRating} value={avgRating !== null ? avgRating.toFixed(1) : "—"} />
+        <StatCard label={dict.profile.statsReviews} value={receivedReviews.length} />
       </div>
 
       <SkillsManager type="OFFER" title={dict.profile.offerTitle} items={offered} dict={dict.skills} />
@@ -45,12 +58,15 @@ export default async function ProfilePage() {
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">
           {dict.profile.reviewsTitle} {avgRating !== null && <Stars rating={avgRating} />}
         </h2>
-        {receivedReviews.length === 0 && <p className="text-sm text-muted">{dict.profile.noReviews}</p>}
+        {receivedReviews.length === 0 && <EmptyState>{dict.profile.noReviews}</EmptyState>}
         <ul className="flex flex-col gap-2">
           {receivedReviews.map((r) => (
             <li key={r.id} className="card flex flex-col gap-1">
               <div className="flex items-center justify-between">
-                <span className="font-medium">{r.author.name ?? r.author.email}</span>
+                <span className="flex items-center gap-2 font-medium">
+                  <Avatar name={r.author.name} email={r.author.email} size={28} />
+                  {r.author.name ?? r.author.email}
+                </span>
                 <Stars rating={r.rating} />
               </div>
               <p className="text-sm text-muted">

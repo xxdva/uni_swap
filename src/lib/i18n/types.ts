@@ -15,6 +15,12 @@ export type Dictionary = {
     description: string;
     ctaLoggedIn: string;
     ctaLoggedOut: string;
+    feature1Title: string;
+    feature1Desc: string;
+    feature2Title: string;
+    feature2Desc: string;
+    feature3Title: string;
+    feature3Desc: string;
   };
   register: {
     title: string;
@@ -38,6 +44,10 @@ export type Dictionary = {
     reviewsTitle: string;
     noReviews: string;
     reviewFor: string;
+    statsOffered: string;
+    statsWanted: string;
+    statsRating: string;
+    statsReviews: string;
   };
   skills: {
     empty: string;
@@ -58,6 +68,8 @@ export type Dictionary = {
     canTeach: string;
     wantsFromYou: string;
     write: string;
+    statsTotal: string;
+    statsMutual: string;
   };
   requestSession: {
     wantToLearnGroup: string;
@@ -79,6 +91,9 @@ export type Dictionary = {
     theyProposed: string;
     meetingLink: string;
     write: string;
+    statsTotal: string;
+    statsCompleted: string;
+    statsPending: string;
   };
   sessionActions: {
     meetingLinkPlaceholder: string;

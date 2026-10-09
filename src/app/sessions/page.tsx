@@ -5,6 +5,9 @@ import { SessionActions } from "@/components/SessionActions";
 import { ReportButton } from "@/components/ReportButton";
 import { ReviewForm } from "@/components/ReviewForm";
 import { Stars } from "@/components/Stars";
+import { Avatar } from "@/components/Avatar";
+import { StatCard } from "@/components/StatCard";
+import { EmptyState } from "@/components/EmptyState";
 import { getDict, getLocale, type Locale } from "@/lib/i18n";
 import { getSkillIcon } from "@/components/ToolIcons";
 import type { SessionStatus } from "@prisma/client";
@@ -38,14 +41,25 @@ export default async function SessionsPage() {
     : [];
   const myReviewBySession = new Map(myReviews.map((r) => [r.sessionId, r]));
 
+  const completedCount = sessions.filter((s) => s.status === "COMPLETED").length;
+  const pendingCount = sessions.filter((s) => s.status === "PENDING").length;
+
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-12">
+    <main className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-12">
       <div>
         <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">{dict.sessions.title}</h1>
         <p className="mt-1 text-sm text-muted">{dict.sessions.subtitle}</p>
       </div>
 
-      {sessions.length === 0 && <p className="text-sm text-muted">{dict.sessions.empty}</p>}
+      {sessions.length > 0 && (
+        <div className="grid grid-cols-3 gap-3 sm:w-96">
+          <StatCard label={dict.sessions.statsTotal} value={sessions.length} />
+          <StatCard label={dict.sessions.statsCompleted} value={completedCount} />
+          <StatCard label={dict.sessions.statsPending} value={pendingCount} />
+        </div>
+      )}
+
+      {sessions.length === 0 && <EmptyState>{dict.sessions.empty}</EmptyState>}
 
       <ul className="flex flex-col gap-3">
         {sessions.map((s) => {
@@ -59,7 +73,8 @@ export default async function SessionsPage() {
           return (
             <li key={s.id} className="card flex flex-col gap-1">
               <div className="flex items-center justify-between">
-                <span className="font-medium">
+                <span className="flex items-center gap-2 font-medium">
+                  <Avatar name={other.name} email={other.email} size={32} />
                   {other.name ?? other.email}{" "}
                   {other.role === "MENTOR" && <span className="text-xs text-muted">{dict.admin.mentorTag}</span>}
                 </span>

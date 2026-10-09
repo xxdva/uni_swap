@@ -15,6 +15,12 @@ export const en: Dictionary = {
     description: "Exchange skills with fellow students: teach what you know, and find someone to teach you.",
     ctaLoggedIn: "View matches",
     ctaLoggedOut: "Get started",
+    feature1Title: "Skill matching",
+    feature1Desc: "The system finds people who want to learn what you teach — and vice versa.",
+    feature2Title: "Chat & scheduling",
+    feature2Desc: "Agree on time and format for your session right inside the app.",
+    feature3Title: "Reviews & rating",
+    feature3Desc: "After each session, participants leave a review — building trust across the community.",
   },
   register: {
     title: "Sign in to Uni Swap",
@@ -44,6 +50,10 @@ export const en: Dictionary = {
     reviewsTitle: "Reviews about me",
     noReviews: "No reviews yet — they'll appear after completed sessions.",
     reviewFor: "For the session on “{skill}”",
+    statsOffered: "Skills offered",
+    statsWanted: "Skills wanted",
+    statsRating: "Average rating",
+    statsReviews: "Reviews received",
   },
   skills: {
     empty: "Nothing yet",
@@ -64,6 +74,8 @@ export const en: Dictionary = {
     canTeach: "Can teach: {skills}",
     wantsFromYou: "Wants to learn from you: {skills}",
     write: "Message",
+    statsTotal: "Matches",
+    statsMutual: "Mutual",
   },
   requestSession: {
     wantToLearnGroup: "I want to learn",
@@ -85,6 +97,9 @@ export const en: Dictionary = {
     theyProposed: "You were offered a session on “{skill}” — {date}",
     meetingLink: "Meeting link",
     write: "Message",
+    statsTotal: "Total sessions",
+    statsCompleted: "Completed",
+    statsPending: "Pending",
   },
   sessionActions: {
     meetingLinkPlaceholder: "Meeting link (optional)",

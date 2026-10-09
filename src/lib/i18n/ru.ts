@@ -16,6 +16,12 @@ export const ru: Dictionary = {
       "Обменивайтесь навыками с другими студентами: научите тому, что умеете, и найдите того, кто научит вас.",
     ctaLoggedIn: "Смотреть совпадения",
     ctaLoggedOut: "Начать",
+    feature1Title: "Подбор по навыкам",
+    feature1Desc: "Система сама находит, кто хочет научиться тому, что вы умеете — и наоборот.",
+    feature2Title: "Чат и договорённости",
+    feature2Desc: "Договаривайтесь о времени и формате встречи прямо в приложении.",
+    feature3Title: "Отзывы и рейтинг",
+    feature3Desc: "После каждой сессии участники оставляют отзыв — так растёт доверие в сообществе.",
   },
   register: {
     title: "Вход в Uni Swap",
@@ -46,6 +52,10 @@ export const ru: Dictionary = {
     reviewsTitle: "Отзывы обо мне",
     noReviews: "Пока нет отзывов — они появятся после завершённых сессий.",
     reviewFor: "За сессию по «{skill}»",
+    statsOffered: "Навыков умею",
+    statsWanted: "Хочу научиться",
+    statsRating: "Средний рейтинг",
+    statsReviews: "Отзывов получено",
   },
   skills: {
     empty: "Пока пусто",
@@ -66,6 +76,8 @@ export const ru: Dictionary = {
     canTeach: "Может научить: {skills}",
     wantsFromYou: "Хочет научиться у вас: {skills}",
     write: "Написать",
+    statsTotal: "Совпадений",
+    statsMutual: "Взаимных",
   },
   requestSession: {
     wantToLearnGroup: "Хочу научиться",
@@ -87,6 +99,9 @@ export const ru: Dictionary = {
     theyProposed: "Вам предложили сессию по «{skill}» — {date}",
     meetingLink: "Ссылка на встречу",
     write: "Написать",
+    statsTotal: "Всего сессий",
+    statsCompleted: "Завершено",
+    statsPending: "Ожидает",
   },
   sessionActions: {
     meetingLinkPlaceholder: "Ссылка на встречу (необязательно)",
