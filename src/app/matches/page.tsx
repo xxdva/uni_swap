@@ -76,7 +76,7 @@ export default async function MatchesPage() {
                 dict={dict.requestSession}
               />
               <div className="flex items-center gap-3 pt-1">
-                <Link href={`/chat/${m.id}`} className="text-sm text-rose-600 hover:underline dark:text-rose-300">
+                <Link href={`/chat/${m.id}`} className="text-sm text-rose-600 transition-colors hover:underline dark:text-rose-300">
                   {dict.matches.write}
                 </Link>
                 <ReportButton targetId={m.id} dict={dict.report} />

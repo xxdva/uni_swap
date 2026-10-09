@@ -10,6 +10,7 @@ export const kk: Dictionary = {
     admin: "Әкімші панелі",
     login: "Кіру",
     logout: "Шығу",
+    themeToggle: "Тақырыпты өзгерту",
   },
   home: {
     description:

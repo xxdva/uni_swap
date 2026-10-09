@@ -10,6 +10,7 @@ export const en: Dictionary = {
     admin: "Admin",
     login: "Log in",
     logout: "Log out",
+    themeToggle: "Toggle theme",
   },
   home: {
     description: "Exchange skills with fellow students: teach what you know, and find someone to teach you.",

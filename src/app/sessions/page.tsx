@@ -119,7 +119,7 @@ export default async function SessionsPage() {
                   <ReviewForm sessionId={s.id} dict={dict.review} />
                 ))}
               <div className="flex items-center gap-3 pt-1">
-                <Link href={`/chat/${other.id}`} className="text-sm text-rose-600 hover:underline dark:text-rose-300">
+                <Link href={`/chat/${other.id}`} className="text-sm text-rose-600 transition-colors hover:underline dark:text-rose-300">
                   {dict.sessions.write}
                 </Link>
                 <ReportButton targetId={other.id} dict={dict.report} />

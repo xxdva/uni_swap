@@ -10,6 +10,7 @@ export const ru: Dictionary = {
     admin: "Админка",
     login: "Войти",
     logout: "Выйти",
+    themeToggle: "Сменить тему",
   },
   home: {
     description:

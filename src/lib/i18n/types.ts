@@ -10,6 +10,7 @@ export type Dictionary = {
     admin: string;
     login: string;
     logout: string;
+    themeToggle: string;
   };
   home: {
     description: string;
