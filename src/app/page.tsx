@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/auth";
 import { getDict, getLocale } from "@/lib/i18n";
-import { NewsFeed } from "@/components/NewsFeed";
+import { HackathonsPanel, ItNewsPanel } from "@/components/NewsFeed";
 import { REGIONS, getHackathonNews, getItNews } from "@/lib/news";
 
 function SwapIcon() {
@@ -45,42 +45,45 @@ export default async function Home() {
   ];
 
   return (
-    <main className="flex flex-1 flex-col">
-      <section className="bg-gradient-to-b from-rose-100 to-white px-6 py-20 text-center dark:from-rose-950/40 dark:to-transparent">
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-6">
-          <Image src="/logo.png" alt="Uni Swap" width={676} height={506} priority className="h-28 w-auto" />
-          <h1 className="text-4xl font-semibold text-rose-700 dark:text-rose-200">Uni Swap</h1>
-          <p className="text-lg text-muted">{dict.home.description}</p>
-          <Link href={session?.user ? "/matches" : "/register"} className="btn-primary px-6 py-3 text-base">
-            {session?.user ? dict.home.ctaLoggedIn : dict.home.ctaLoggedOut}
-          </Link>
-          {!session?.user && (
-            <Link href="/login" className="text-sm text-rose-700 underline dark:text-rose-200">
-              {dict.nav.login}
+    <main className="mx-auto grid w-full max-w-[90rem] flex-1 gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+      {/* Центр идёт первым в разметке, чтобы на мобильных он был сверху; на десктопе — вторая колонка. */}
+      <div className="flex flex-col gap-8 lg:order-2">
+        <section className="rounded-2xl bg-gradient-to-b from-rose-100 to-white px-6 py-12 text-center dark:from-rose-950/40 dark:to-transparent">
+          <div className="mx-auto flex max-w-xl flex-col items-center gap-5">
+            <Image src="/logo.png" alt="Uni Swap" width={676} height={506} priority className="h-24 w-auto" />
+            <h1 className="text-4xl font-semibold text-rose-700 dark:text-rose-200">Uni Swap</h1>
+            <p className="text-lg text-muted">{dict.home.description}</p>
+            <Link href={session?.user ? "/matches" : "/register"} className="btn-primary px-6 py-3 text-base">
+              {session?.user ? dict.home.ctaLoggedIn : dict.home.ctaLoggedOut}
             </Link>
-          )}
-        </div>
-      </section>
-
-      <NewsFeed
-        hackathons={hackathons}
-        itNews={itNews}
-        regions={REGIONS.map((r) => r.name)}
-        locale={locale}
-        dict={dict.home}
-      />
-
-      <section className="mx-auto grid w-full max-w-4xl gap-4 px-6 pb-16 sm:grid-cols-3">
-        {features.map((f, i) => (
-          <div key={i} className="card flex flex-col items-center gap-3 text-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500 text-white dark:bg-rose-400 dark:text-rose-950">
-              {f.icon}
-            </span>
-            <h3 className="font-medium text-rose-700 dark:text-rose-200">{f.title}</h3>
-            <p className="text-sm text-muted">{f.desc}</p>
+            {!session?.user && (
+              <Link href="/login" className="text-sm text-rose-700 underline dark:text-rose-200">
+                {dict.nav.login}
+              </Link>
+            )}
           </div>
-        ))}
-      </section>
+        </section>
+
+        <section className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+          {features.map((f, i) => (
+            <div key={i} className="card flex flex-col items-center gap-3 text-center">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500 text-white dark:bg-rose-400 dark:text-rose-950">
+                {f.icon}
+              </span>
+              <h3 className="font-medium text-rose-700 dark:text-rose-200">{f.title}</h3>
+              <p className="text-sm text-muted">{f.desc}</p>
+            </div>
+          ))}
+        </section>
+      </div>
+
+      <div className="lg:order-1">
+        <HackathonsPanel hackathons={hackathons} regions={REGIONS.map((r) => r.name)} locale={locale} dict={dict.home} />
+      </div>
+
+      <div className="lg:order-3">
+        <ItNewsPanel itNews={itNews} locale={locale} dict={dict.home} />
+      </div>
     </main>
   );
 }
