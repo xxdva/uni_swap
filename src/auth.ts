@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import Resend from "next-auth/providers/resend";
+import Nodemailer from "next-auth/providers/nodemailer";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { isAllowedEmail } from "@/lib/domain";
@@ -12,8 +12,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // с бизнес-моделью SkillSession.
   session: { strategy: "jwt" },
   providers: [
-    Resend({
-      apiKey: process.env.RESEND_API_KEY,
+    Nodemailer({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: Number(process.env.EMAIL_SERVER_PORT ?? 465),
+        secure: true,
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
+      },
       from: process.env.EMAIL_FROM,
     }),
   ],

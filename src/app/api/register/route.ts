@@ -48,12 +48,12 @@ export async function POST(req: Request) {
   });
 
   // Auth.js не бросает исключение при сбое sendVerificationRequest (например,
-  // невалидный RESEND_API_KEY) — вместо этого signIn(..., { redirect: false })
+  // неверные SMTP-креды) — вместо этого signIn(..., { redirect: false })
   // молча возвращает ссылку на страницу /api/auth/error. Поэтому проверяем
   // именно результат, а не полагаемся на try/catch.
   let redirectTarget: string;
   try {
-    redirectTarget = await signIn("resend", { email, redirect: false });
+    redirectTarget = await signIn("nodemailer", { email, redirect: false });
   } catch {
     return NextResponse.json({ error: "send_failed" }, { status: 502 });
   }
