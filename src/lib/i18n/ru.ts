@@ -148,6 +148,10 @@ export const ru: Dictionary = {
     noMentorApplications: "Заявок пока нет.",
     mentorApprove: "Одобрить",
     mentorReject: "Отклонить",
+    statsUsers: "Пользователей",
+    statsBlocked: "Заблокировано",
+    statsOpenReports: "Открытых жалоб",
+    statsPendingApplications: "Заявок на ментора",
   },
   mentor: {
     title: "Кабинет ментора",
@@ -166,6 +170,12 @@ export const ru: Dictionary = {
     applyRejected: "Заявка отклонена. Можно подать повторно.",
     applyError: "Не удалось отправить заявку",
     verifiedLabel: "Навык подтверждён",
+    benefit1Title: "Личный кабинет",
+    benefit1Desc: "Статистика по рейтингу и завершённым сессиям на отдельной странице.",
+    benefit2Title: "Отметка доверия",
+    benefit2Desc: "Рядом с вашим именем в совпадениях и сессиях появится метка «ментор».",
+    benefit3Title: "Подтверждённые навыки",
+    benefit3Desc: "После успешных сессий ваши навыки отмечаются бейджем подтверждения.",
   },
   notifications: {
     label: "Уведомления",

@@ -147,6 +147,10 @@ export const kk: Dictionary = {
     noMentorApplications: "Әзірге өтінімдер жоқ.",
     mentorApprove: "Мақұлдау",
     mentorReject: "Қабылдамау",
+    statsUsers: "Пайдаланушылар",
+    statsBlocked: "Бұғатталған",
+    statsOpenReports: "Ашық шағымдар",
+    statsPendingApplications: "Ментор өтінімдері",
   },
   mentor: {
     title: "Ментор кабинеті",
@@ -165,6 +169,12 @@ export const kk: Dictionary = {
     applyRejected: "Өтінім қабылданбады. Қайта жіберуге болады.",
     applyError: "Өтінімді жіберу мүмкін болмады",
     verifiedLabel: "Дағды расталған",
+    benefit1Title: "Жеке кабинет",
+    benefit1Desc: "Рейтинг және аяқталған сессиялар статистикасы жеке бетте.",
+    benefit2Title: "Сенім белгісі",
+    benefit2Desc: "Сәйкестіктер мен сессияларда атыңыздың жанында «ментор» белгісі пайда болады.",
+    benefit3Title: "Расталған дағдылар",
+    benefit3Desc: "Сәтті сессиялардан кейін дағдыларыңызға растау белгісі қойылады.",
   },
   notifications: {
     label: "Хабарландырулар",

@@ -146,6 +146,10 @@ export const en: Dictionary = {
     noMentorApplications: "No applications yet.",
     mentorApprove: "Approve",
     mentorReject: "Reject",
+    statsUsers: "Users",
+    statsBlocked: "Blocked",
+    statsOpenReports: "Open reports",
+    statsPendingApplications: "Mentor applications",
   },
   mentor: {
     title: "Mentor dashboard",
@@ -163,6 +167,12 @@ export const en: Dictionary = {
     applyRejected: "Your application was rejected. You can apply again.",
     applyError: "Couldn't submit the application",
     verifiedLabel: "Skill verified",
+    benefit1Title: "Personal dashboard",
+    benefit1Desc: "Rating and completed-session stats on a dedicated page.",
+    benefit2Title: "Trust mark",
+    benefit2Desc: "A “mentor” tag appears next to your name in matches and sessions.",
+    benefit3Title: "Verified skills",
+    benefit3Desc: "After successful sessions, your skills get a verification badge.",
   },
   notifications: {
     label: "Notifications",

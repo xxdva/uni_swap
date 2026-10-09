@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { UserBlockButton } from "@/components/admin/UserBlockButton";
 import { ReportActions } from "@/components/admin/ReportActions";
 import { MentorApplicationActions } from "@/components/admin/MentorApplicationActions";
+import { Avatar } from "@/components/Avatar";
+import { StatCard } from "@/components/StatCard";
+import { EmptyState } from "@/components/EmptyState";
 import { format, getDict } from "@/lib/i18n";
 import type { ReportStatus } from "@prisma/client";
 
@@ -33,6 +36,9 @@ export default async function AdminPage() {
     }),
   ]);
 
+  const blockedCount = users.filter((u) => u.isBlocked).length;
+  const openReportsCount = reports.filter((r) => r.status === "OPEN").length;
+
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-10 px-6 py-12">
       <div>
@@ -40,15 +46,25 @@ export default async function AdminPage() {
         <p className="mt-1 text-sm text-muted">{dict.admin.subtitle}</p>
       </div>
 
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatCard label={dict.admin.statsUsers} value={users.length} />
+        <StatCard label={dict.admin.statsBlocked} value={blockedCount} />
+        <StatCard label={dict.admin.statsOpenReports} value={openReportsCount} />
+        <StatCard label={dict.admin.statsPendingApplications} value={mentorApplications.length} />
+      </div>
+
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">
           {format(dict.admin.mentorApplicationsTitle, { count: mentorApplications.length })}
         </h2>
-        {mentorApplications.length === 0 && <p className="text-sm text-muted">{dict.admin.noMentorApplications}</p>}
+        {mentorApplications.length === 0 && <EmptyState>{dict.admin.noMentorApplications}</EmptyState>}
         <ul className="flex flex-col gap-2">
           {mentorApplications.map((a) => (
             <li key={a.id} className="card flex flex-col gap-2">
-              <span className="font-medium">{a.user.name ?? a.user.email}</span>
+              <span className="flex items-center gap-2 font-medium">
+                <Avatar name={a.user.name} email={a.user.email} size={28} />
+                {a.user.name ?? a.user.email}
+              </span>
               {a.message && <p className="text-sm text-muted">{a.message}</p>}
               <MentorApplicationActions applicationId={a.id} dict={dict.admin} />
             </li>
@@ -63,14 +79,17 @@ export default async function AdminPage() {
         <ul className="flex flex-col gap-2">
           {users.map((u) => (
             <li key={u.id} className="card flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-medium">
-                  {u.name ?? u.email}{" "}
-                  {u.role === "ADMIN" && <span className="text-xs text-muted">{dict.admin.adminTag}</span>}
-                  {u.role === "MENTOR" && <span className="text-xs text-muted">{dict.admin.mentorTag}</span>}
-                  {u.isBlocked && <span className="text-xs text-red-600"> · {dict.admin.blockedTag}</span>}
-                </p>
-                <p className="truncate text-sm text-muted">{u.email}</p>
+              <div className="flex min-w-0 items-center gap-3">
+                <Avatar name={u.name} email={u.email} size={36} />
+                <div className="min-w-0">
+                  <p className="font-medium">
+                    {u.name ?? u.email}{" "}
+                    {u.role === "ADMIN" && <span className="text-xs text-muted">{dict.admin.adminTag}</span>}
+                    {u.role === "MENTOR" && <span className="text-xs text-muted">{dict.admin.mentorTag}</span>}
+                    {u.isBlocked && <span className="text-xs text-red-600"> · {dict.admin.blockedTag}</span>}
+                  </p>
+                  <p className="truncate text-sm text-muted">{u.email}</p>
+                </div>
               </div>
               {u.id !== admin.user.id && (
                 <UserBlockButton userId={u.id} isBlocked={u.isBlocked} dict={dict.admin} />
@@ -84,7 +103,7 @@ export default async function AdminPage() {
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">
           {format(dict.admin.reportsTitle, { count: reports.length })}
         </h2>
-        {reports.length === 0 && <p className="text-sm text-muted">{dict.admin.noReports}</p>}
+        {reports.length === 0 && <EmptyState>{dict.admin.noReports}</EmptyState>}
         <ul className="flex flex-col gap-2">
           {reports.map((r) => (
             <li key={r.id} className="card flex flex-col gap-1">

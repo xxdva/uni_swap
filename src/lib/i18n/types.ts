@@ -140,6 +140,10 @@ export type Dictionary = {
     noMentorApplications: string;
     mentorApprove: string;
     mentorReject: string;
+    statsUsers: string;
+    statsBlocked: string;
+    statsOpenReports: string;
+    statsPendingApplications: string;
   };
   mentor: {
     title: string;
@@ -156,6 +160,12 @@ export type Dictionary = {
     applyRejected: string;
     applyError: string;
     verifiedLabel: string;
+    benefit1Title: string;
+    benefit1Desc: string;
+    benefit2Title: string;
+    benefit2Desc: string;
+    benefit3Title: string;
+    benefit3Desc: string;
   };
   notifications: {
     label: string;

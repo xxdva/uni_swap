@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { ChatThread } from "@/components/ChatThread";
+import { Avatar } from "@/components/Avatar";
 import { getDict } from "@/lib/i18n";
 
 export default async function ChatThreadPage({ params }: { params: Promise<{ userId: string }> }) {
@@ -24,9 +26,19 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ use
 
   return (
     <main className="mx-auto flex h-[calc(100vh-64px)] w-full max-w-2xl flex-col gap-4 px-6 py-6">
-      <h1 className="text-lg font-semibold text-rose-700 dark:text-rose-200">
-        {other.name ?? other.email}
-      </h1>
+      <div className="flex items-center gap-3">
+        <Link
+          href="/chat"
+          aria-label={dict.chat.listTitle}
+          className="text-rose-600 hover:text-rose-800 dark:text-rose-300"
+        >
+          ←
+        </Link>
+        <Avatar name={other.name} email={other.email} size={36} />
+        <h1 className="text-lg font-semibold text-rose-700 dark:text-rose-200">
+          {other.name ?? other.email}
+        </h1>
+      </div>
       <ChatThread
         meId={meId}
         otherUserId={otherUserId}
