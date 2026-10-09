@@ -23,6 +23,13 @@ export type Dictionary = {
     feature2Desc: string;
     feature3Title: string;
     feature3Desc: string;
+    newsTitle: string;
+    newsSubtitle: string;
+    hackathonsTitle: string;
+    itNewsTitle: string;
+    regionAll: string;
+    newsEmpty: string;
+    newsSourceLabel: string;
   };
   register: {
     title: string;

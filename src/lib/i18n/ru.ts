@@ -24,6 +24,13 @@ export const ru: Dictionary = {
     feature2Desc: "Договаривайтесь о времени и формате встречи прямо в приложении.",
     feature3Title: "Отзывы и рейтинг",
     feature3Desc: "После каждой сессии участники оставляют отзыв — так растёт доверие в сообществе.",
+    newsTitle: "Новости IT",
+    newsSubtitle: "Свежие новости из мира IT в Казахстане — обновляются каждый час.",
+    hackathonsTitle: "Хакатоны по регионам",
+    itNewsTitle: "IT-новости Казахстана",
+    regionAll: "Все регионы",
+    newsEmpty: "Пока ничего не нашли — загляните позже.",
+    newsSourceLabel: "Источник",
   },
   register: {
     title: "Вход в Uni Swap",

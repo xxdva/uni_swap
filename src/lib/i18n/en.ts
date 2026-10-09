@@ -23,6 +23,13 @@ export const en: Dictionary = {
     feature2Desc: "Agree on time and format for your session right inside the app.",
     feature3Title: "Reviews & rating",
     feature3Desc: "After each session, participants leave a review — building trust across the community.",
+    newsTitle: "IT news",
+    newsSubtitle: "Fresh IT news from Kazakhstan — updated hourly.",
+    hackathonsTitle: "Hackathons by region",
+    itNewsTitle: "IT news in Kazakhstan",
+    regionAll: "All regions",
+    newsEmpty: "Nothing found yet — check back later.",
+    newsSourceLabel: "Source",
   },
   register: {
     title: "Sign in to Uni Swap",

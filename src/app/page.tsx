@@ -1,7 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/auth";
-import { getDict } from "@/lib/i18n";
+import { getDict, getLocale } from "@/lib/i18n";
+import { NewsFeed } from "@/components/NewsFeed";
+import { REGIONS, getHackathonNews, getItNews } from "@/lib/news";
 
 function SwapIcon() {
   return (
@@ -28,7 +30,13 @@ function StarIcon() {
 }
 
 export default async function Home() {
-  const [session, dict] = await Promise.all([auth(), getDict()]);
+  const [session, dict, locale, hackathons, itNews] = await Promise.all([
+    auth(),
+    getDict(),
+    getLocale(),
+    getHackathonNews(),
+    getItNews(),
+  ]);
 
   const features = [
     { icon: <SwapIcon />, title: dict.home.feature1Title, desc: dict.home.feature1Desc },
@@ -54,7 +62,15 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-4xl gap-4 px-6 py-16 sm:grid-cols-3">
+      <NewsFeed
+        hackathons={hackathons}
+        itNews={itNews}
+        regions={REGIONS.map((r) => r.name)}
+        locale={locale}
+        dict={dict.home}
+      />
+
+      <section className="mx-auto grid w-full max-w-4xl gap-4 px-6 pb-16 sm:grid-cols-3">
         {features.map((f, i) => (
           <div key={i} className="card flex flex-col items-center gap-3 text-center">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500 text-white dark:bg-rose-400 dark:text-rose-950">
