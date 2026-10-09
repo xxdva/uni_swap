@@ -5,15 +5,17 @@ import { useRouter } from "next/navigation";
 import { format } from "@/lib/i18n/format";
 import type { Dictionary } from "@/lib/i18n/types";
 
-// Список только для текста на странице — реальная проверка всегда на сервере
-// (/api/register, ALLOWED_EMAIL_DOMAINS). Personal-домены здесь временно,
-// пока @astanait.edu.kz не подтверждён в Resend для реальной доставки писем —
-// перед открытием доступа студентам оставить только университетский домен.
-const DISPLAY_DOMAINS = ["astanait.edu.kz", "gmail.com", "icloud.com"];
-const DOMAINS_TEXT = DISPLAY_DOMAINS.map((d) => `@${d}`).join(", ");
-
-export function RegisterForm({ dict }: { dict: Dictionary["register"] }) {
+export function RegisterForm({
+  dict,
+  allowedDomains,
+}: {
+  dict: Dictionary["register"];
+  allowedDomains: string[] | "any";
+}) {
   const router = useRouter();
+  const isOpen = allowedDomains === "any";
+  const domainsText = isOpen ? "" : allowedDomains.map((d) => `@${d}`).join(", ");
+  const placeholderDomain = isOpen ? "example.com" : allowedDomains[0];
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [pending, setPending] = useState(false);
@@ -39,7 +41,7 @@ export function RegisterForm({ dict }: { dict: Dictionary["register"] }) {
 
       if (!res.ok) {
         setError(
-          data.error === "domain_not_allowed" ? format(dict.domainError, { domains: DOMAINS_TEXT }) : dict.genericError
+          data.error === "domain_not_allowed" ? format(dict.domainError, { domains: domainsText }) : dict.genericError
         );
         return;
       }
@@ -56,7 +58,9 @@ export function RegisterForm({ dict }: { dict: Dictionary["register"] }) {
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-6">
       <div>
         <h1 className="text-2xl font-semibold text-rose-700 dark:text-rose-200">{dict.title}</h1>
-        <p className="mt-1 text-sm text-muted">{format(dict.subtitle, { domains: DOMAINS_TEXT })}</p>
+        <p className="mt-1 text-sm text-muted">
+          {isOpen ? dict.subtitleOpen : format(dict.subtitle, { domains: domainsText })}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -67,7 +71,7 @@ export function RegisterForm({ dict }: { dict: Dictionary["register"] }) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder={`ivan.ivanov@${DISPLAY_DOMAINS[0]}`}
+            placeholder={`ivan.ivanov@${placeholderDomain}`}
             className="input-field"
           />
         </label>

@@ -19,6 +19,7 @@ export const en: Dictionary = {
   register: {
     title: "Sign in to Uni Swap",
     subtitle: "Available for: {domains}. We'll send you a sign-in link — no password needed.",
+    subtitleOpen: "Open to any email. We'll send you a sign-in link — no password needed.",
     emailLabel: "University email",
     consentLabel: "I consent to the processing of my personal data in accordance with Uni Swap's privacy policy.",
     consentError: "You need to consent to data processing",

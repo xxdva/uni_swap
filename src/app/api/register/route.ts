@@ -25,11 +25,12 @@ export async function POST(req: Request) {
   const email = parsed.data.email.toLowerCase().trim();
 
   if (!isAllowedEmail(email)) {
-    const domains = getAllowedDomains().map((d) => `@${d}`).join(", ");
-    return NextResponse.json(
-      { error: "domain_not_allowed", message: `Регистрация доступна только на почту: ${domains}` },
-      { status: 400 }
-    );
+    const allowed = getAllowedDomains();
+    const message =
+      allowed === "any"
+        ? "Введите корректный email"
+        : `Регистрация доступна только на почту: ${allowed.map((d) => `@${d}`).join(", ")}`;
+    return NextResponse.json({ error: "domain_not_allowed", message }, { status: 400 });
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });

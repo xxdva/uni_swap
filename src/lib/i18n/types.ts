@@ -19,6 +19,7 @@ export type Dictionary = {
   register: {
     title: string;
     subtitle: string;
+    subtitleOpen: string;
     emailLabel: string;
     consentLabel: string;
     consentError: string;
