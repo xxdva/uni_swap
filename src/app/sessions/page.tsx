@@ -25,8 +25,8 @@ export default async function SessionsPage() {
   const sessions = await prisma.skillSession.findMany({
     where: { OR: [{ requesterId: userId }, { partnerId: userId }] },
     include: {
-      requester: { select: { id: true, name: true, email: true } },
-      partner: { select: { id: true, name: true, email: true } },
+      requester: { select: { id: true, name: true, email: true, role: true } },
+      partner: { select: { id: true, name: true, email: true, role: true } },
       skill: true,
     },
     orderBy: { dateTime: "desc" },
@@ -59,7 +59,10 @@ export default async function SessionsPage() {
           return (
             <li key={s.id} className="card flex flex-col gap-1">
               <div className="flex items-center justify-between">
-                <span className="font-medium">{other.name ?? other.email}</span>
+                <span className="font-medium">
+                  {other.name ?? other.email}{" "}
+                  {other.role === "MENTOR" && <span className="text-xs text-muted">{dict.admin.mentorTag}</span>}
+                </span>
                 <span className="text-xs text-muted">{STATUS_LABEL[s.status]}</span>
               </div>
               <p className="flex flex-wrap items-center gap-1 text-sm text-muted">

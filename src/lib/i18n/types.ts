@@ -6,6 +6,7 @@ export type Dictionary = {
     matches: string;
     sessions: string;
     chat: string;
+    mentor: string;
     admin: string;
     login: string;
     logout: string;
@@ -110,6 +111,7 @@ export type Dictionary = {
     reportsTitle: string;
     noReports: string;
     adminTag: string;
+    mentorTag: string;
     blockedTag: string;
     block: string;
     unblock: string;
@@ -118,5 +120,30 @@ export type Dictionary = {
     reportOpen: string;
     reportResolved: string;
     reportDismissed: string;
+    mentorApplicationsTitle: string;
+    noMentorApplications: string;
+    mentorApprove: string;
+    mentorReject: string;
+  };
+  mentor: {
+    title: string;
+    dashboardSubtitle: string;
+    statsRating: string;
+    statsSessions: string;
+    verifiedSkillsTitle: string;
+    noVerifiedSkills: string;
+    applyTitle: string;
+    applyDescription: string;
+    applyMessagePlaceholder: string;
+    applySubmit: string;
+    applyPending: string;
+    applyRejected: string;
+    applyError: string;
+    verifiedLabel: string;
+  };
+  notifications: {
+    label: string;
+    empty: string;
+    item: string;
   };
 };

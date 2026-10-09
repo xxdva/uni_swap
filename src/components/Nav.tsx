@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { getDict, getLocale } from "@/lib/i18n";
 import { SignOutButton } from "@/components/SignOutButton";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export async function Nav() {
   const [session, dict, locale] = await Promise.all([auth(), getDict(), getLocale()]);
@@ -30,11 +31,15 @@ export async function Nav() {
             <Link href="/chat" className="text-sm text-rose-700 hover:underline dark:text-rose-200">
               {dict.nav.chat}
             </Link>
+            <Link href="/mentor" className="text-sm text-rose-700 hover:underline dark:text-rose-200">
+              {dict.nav.mentor}
+            </Link>
             {session.user.role === "ADMIN" && (
               <Link href="/admin" className="text-sm text-rose-700 hover:underline dark:text-rose-200">
                 {dict.nav.admin}
               </Link>
             )}
+            <NotificationBell dict={dict.notifications} />
             <SignOutButton label={dict.nav.logout} />
           </>
         ) : (

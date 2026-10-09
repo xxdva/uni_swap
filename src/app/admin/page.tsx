@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { UserBlockButton } from "@/components/admin/UserBlockButton";
 import { ReportActions } from "@/components/admin/ReportActions";
+import { MentorApplicationActions } from "@/components/admin/MentorApplicationActions";
 import { format, getDict } from "@/lib/i18n";
 import type { ReportStatus } from "@prisma/client";
 
@@ -16,7 +17,7 @@ export default async function AdminPage() {
     DISMISSED: dict.admin.reportDismissed,
   };
 
-  const [users, reports] = await Promise.all([
+  const [users, reports, mentorApplications] = await Promise.all([
     prisma.user.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.report.findMany({
       include: {
@@ -24,6 +25,11 @@ export default async function AdminPage() {
         target: { select: { id: true, name: true, email: true } },
       },
       orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    }),
+    prisma.mentorApplication.findMany({
+      where: { status: "PENDING" },
+      include: { user: { select: { id: true, name: true, email: true } } },
+      orderBy: { createdAt: "asc" },
     }),
   ]);
 
@@ -36,6 +42,22 @@ export default async function AdminPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">
+          {format(dict.admin.mentorApplicationsTitle, { count: mentorApplications.length })}
+        </h2>
+        {mentorApplications.length === 0 && <p className="text-sm text-muted">{dict.admin.noMentorApplications}</p>}
+        <ul className="flex flex-col gap-2">
+          {mentorApplications.map((a) => (
+            <li key={a.id} className="card flex flex-col gap-2">
+              <span className="font-medium">{a.user.name ?? a.user.email}</span>
+              {a.message && <p className="text-sm text-muted">{a.message}</p>}
+              <MentorApplicationActions applicationId={a.id} dict={dict.admin} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">
           {format(dict.admin.usersTitle, { count: users.length })}
         </h2>
         <ul className="flex flex-col gap-2">
@@ -45,6 +67,7 @@ export default async function AdminPage() {
                 <p className="font-medium">
                   {u.name ?? u.email}{" "}
                   {u.role === "ADMIN" && <span className="text-xs text-muted">{dict.admin.adminTag}</span>}
+                  {u.role === "MENTOR" && <span className="text-xs text-muted">{dict.admin.mentorTag}</span>}
                   {u.isBlocked && <span className="text-xs text-red-600"> · {dict.admin.blockedTag}</span>}
                 </p>
                 <p className="truncate text-sm text-muted">{u.email}</p>

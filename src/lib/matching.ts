@@ -4,6 +4,7 @@ export type MatchCandidate = {
   id: string;
   name: string | null;
   email: string;
+  role: "STUDENT" | "MENTOR" | "ADMIN";
   theyOfferIWant: number;
   theyWantIOffer: number;
   score: number;
@@ -18,6 +19,7 @@ type MatchRow = {
   id: string;
   name: string | null;
   email: string;
+  role: "STUDENT" | "MENTOR" | "ADMIN";
   they_offer_i_want: bigint;
   they_want_i_offer: bigint;
   score: bigint;
@@ -55,7 +57,7 @@ export async function findMatches(userId: string, limit = 50): Promise<MatchCand
       GROUP BY us."userId"
     )
     SELECT
-      u.id, u.name, u.email,
+      u.id, u.name, u.email, u.role,
       COALESCE(tow.cnt, 0) AS they_offer_i_want,
       COALESCE(twi.cnt, 0) AS they_want_i_offer,
       (COALESCE(tow.cnt, 0) + COALESCE(twi.cnt, 0)) AS score,
@@ -99,6 +101,7 @@ export async function findMatches(userId: string, limit = 50): Promise<MatchCand
     id: r.id,
     name: r.name,
     email: r.email,
+    role: r.role,
     theyOfferIWant: Number(r.they_offer_i_want),
     theyWantIOffer: Number(r.they_want_i_offer),
     score: Number(r.score),
