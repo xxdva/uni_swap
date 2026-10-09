@@ -12,8 +12,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // migrate/advisory-lock нужен прямой (unpooled) коннект — PgBouncer в
+  // pooled-режиме (который использует обычный DATABASE_URL у Neon) путает
+  // session-scoped advisory locks между разными клиентами, из-за чего
+  // `prisma migrate deploy` может зависать/падать по чужому "застрявшему"
+  // логу. DIRECT_DATABASE_URL — тот же Neon-хост, но без "-pooler".
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 // ───────────────────────── Auth.js (NextAuth) ─────────────────────────
