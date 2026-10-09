@@ -3,12 +3,14 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { isAllowedEmail, getAllowedDomains } from "@/lib/domain";
 import { signIn } from "@/auth";
+import { isRoleCodeValid } from "@/lib/roleCodes";
 
 const schema = z.object({
   email: z.string().email(),
   // Роль задаётся при создании аккаунта; менять её потом можно в профиле
   // (/api/profile/role, только для вошедшего) — здесь чужую роль не трогаем.
   role: z.enum(["STUDENT", "MENTOR", "ADMIN"]).default("STUDENT"),
+  roleCode: z.string().max(100).optional(),
   consent: z.boolean().refine((v) => v === true, {
     message: "Нужно согласие на обработку персональных данных",
   }),
@@ -34,6 +36,11 @@ export async function POST(req: Request) {
         ? "Введите корректный email"
         : `Регистрация доступна только на почту: ${allowed.map((d) => `@${d}`).join(", ")}`;
     return NextResponse.json({ error: "domain_not_allowed", message }, { status: 400 });
+  }
+
+  // Ментором и админом можно зарегистрироваться только с секретным кодом.
+  if (!isRoleCodeValid(parsed.data.role, parsed.data.roleCode)) {
+    return NextResponse.json({ error: "invalid_role_code" }, { status: 403 });
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });

@@ -56,6 +56,11 @@ export type Dictionary = {
     roleMentorDesc: string;
     roleAdmin: string;
     roleAdminDesc: string;
+    roleCodeLabel: string;
+    roleCodePlaceholder: string;
+    roleCodeError: string;
+    roleCodeConfirm: string;
+    roleCodeHint: string;
   };
   services: {
     title: string;

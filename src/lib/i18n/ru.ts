@@ -58,6 +58,11 @@ export const ru: Dictionary = {
     roleMentorDesc: "Проверяю сертификаты",
     roleAdmin: "Админ",
     roleAdminDesc: "Модерирую платформу",
+    roleCodeLabel: "Секретный код",
+    roleCodePlaceholder: "Введите код",
+    roleCodeError: "Неверный секретный код",
+    roleCodeConfirm: "Подтвердить",
+    roleCodeHint: "Для роли ментора и админа нужен секретный код.",
   },
   services: {
     title: "Наши услуги",
@@ -118,7 +123,7 @@ export const ru: Dictionary = {
     statsRating: "Средний рейтинг",
     statsReviews: "Отзывов получено",
     roleTitle: "Моя роль",
-    roleHint: "Роль можно сменить в любой момент.",
+    roleHint: "Роль «Юзер» доступна всегда; для ментора и админа нужен секретный код.",
   },
   skills: {
     empty: "Пока пусто",

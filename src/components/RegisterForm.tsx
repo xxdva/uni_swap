@@ -21,6 +21,7 @@ export function RegisterForm({
   const placeholderDomain = isOpen ? "example.com" : allowedDomains[0];
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("STUDENT");
+  const [roleCode, setRoleCode] = useState("");
   const [consent, setConsent] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export function RegisterForm({
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, role, consent }),
+        body: JSON.stringify({ email, role, roleCode: role === "STUDENT" ? undefined : roleCode, consent }),
       });
       const data = await res.json();
 
@@ -49,7 +50,9 @@ export function RegisterForm({
             ? format(dict.domainError, { domains: domainsText })
             : data.error === "already_registered"
               ? dict.alreadyRegistered
-              : dict.genericError
+              : data.error === "invalid_role_code"
+                ? dict.roleCodeError
+                : dict.genericError
         );
         return;
       }
@@ -114,6 +117,21 @@ export function RegisterForm({
             ))}
           </div>
         </fieldset>
+
+        {role !== "STUDENT" && (
+          <label className="flex flex-col gap-1 text-sm">
+            {dict.roleCodeLabel}
+            <input
+              type="password"
+              autoComplete="off"
+              required
+              value={roleCode}
+              onChange={(e) => setRoleCode(e.target.value)}
+              placeholder={dict.roleCodePlaceholder}
+              className="input-field"
+            />
+          </label>
+        )}
 
         <label className="flex items-start gap-2 text-sm">
           <input

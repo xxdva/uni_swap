@@ -56,6 +56,11 @@ export const en: Dictionary = {
     roleMentorDesc: "I review certificates",
     roleAdmin: "Admin",
     roleAdminDesc: "I moderate the platform",
+    roleCodeLabel: "Secret code",
+    roleCodePlaceholder: "Enter the code",
+    roleCodeError: "Wrong secret code",
+    roleCodeConfirm: "Confirm",
+    roleCodeHint: "Mentor and admin roles require a secret code.",
   },
   services: {
     title: "Our services",
@@ -116,7 +121,7 @@ export const en: Dictionary = {
     statsRating: "Average rating",
     statsReviews: "Reviews received",
     roleTitle: "My role",
-    roleHint: "You can change your role at any time.",
+    roleHint: "The User role is always available; mentor and admin need a secret code.",
   },
   skills: {
     empty: "Nothing yet",

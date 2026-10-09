@@ -57,6 +57,11 @@ export const kk: Dictionary = {
     roleMentorDesc: "Сертификаттарды тексеремін",
     roleAdmin: "Әкімші",
     roleAdminDesc: "Платформаны модерациялаймын",
+    roleCodeLabel: "Құпия код",
+    roleCodePlaceholder: "Кодты енгізіңіз",
+    roleCodeError: "Құпия код дұрыс емес",
+    roleCodeConfirm: "Растау",
+    roleCodeHint: "Ментор және әкімші рөлдері үшін құпия код қажет.",
   },
   services: {
     title: "Біздің қызметтер",
@@ -117,7 +122,7 @@ export const kk: Dictionary = {
     statsRating: "Орташа рейтинг",
     statsReviews: "Алынған пікірлер",
     roleTitle: "Менің рөлім",
-    roleHint: "Рөлді кез келген уақытта ауыстыруға болады.",
+    roleHint: "«Қолданушы» рөлі әрдайым қолжетімді; ментор мен әкімшіге құпия код қажет.",
   },
   skills: {
     empty: "Әзірге бос",
