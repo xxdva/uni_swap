@@ -74,6 +74,15 @@ enum CertificateStatus {
   REJECTED
 }
 
+enum AchievementType {
+  HACKATHON
+  OLYMPIAD
+  COMPETITION
+  CONFERENCE
+  COURSE
+  OTHER
+}
+
 enum SkillType {
   OFFER
   WANT
@@ -129,6 +138,7 @@ model User {
   reportsFiled    Report[] @relation("ReportReporter")
   reportsReceived Report[] @relation("ReportTarget")
 
+  achievements         Achievement[]
   certificates         Certificate[] @relation("CertificateOwner")
   certificatesReviewed Certificate[] @relation("CertificateReviewer")
 
@@ -156,8 +166,30 @@ model Certificate {
   reviewer User?  @relation("CertificateReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
   skill    Skill? @relation(fields: [skillId], references: [id], onDelete: SetNull)
 
+  achievements Achievement[]
+
   @@index([userId])
   @@index([status])
+}
+
+// Достижение пользователя на мероприятии (хакатон, олимпиада и т.д.).
+// Можно привязать загруженный сертификат — если его одобрили, достижение
+// показывается как подтверждённое.
+model Achievement {
+  id            String          @id @default(cuid())
+  userId        String
+  title         String
+  eventName     String
+  type          AchievementType @default(OTHER)
+  achievedAt    DateTime
+  description   String?
+  certificateId String?
+  createdAt     DateTime        @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  certificate Certificate? @relation(fields: [certificateId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
 }
 
 model Skill {

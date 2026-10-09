@@ -224,6 +224,32 @@ export type Dictionary = {
     verifiedLabel: string;
     reviewHint: string;
   };
+  achievements: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    titleLabel: string;
+    titlePlaceholder: string;
+    eventLabel: string;
+    eventPlaceholder: string;
+    typeLabel: string;
+    dateLabel: string;
+    descriptionLabel: string;
+    certificateLabel: string;
+    certificateNone: string;
+    certificateHint: string;
+    add: string;
+    addError: string;
+    delete: string;
+    verified: string;
+    viewCertificate: string;
+    typeHackathon: string;
+    typeOlympiad: string;
+    typeCompetition: string;
+    typeConference: string;
+    typeCourse: string;
+    typeOther: string;
+  };
   certs: {
     title: string;
     subtitle: string;

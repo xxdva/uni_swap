@@ -3,17 +3,23 @@ import { prisma } from "@/lib/prisma";
 import { SkillsManager } from "@/components/SkillsManager";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { CertificatesManager } from "@/components/CertificatesManager";
+import { AchievementsManager } from "@/components/AchievementsManager";
 import { Stars } from "@/components/Stars";
 import { Avatar } from "@/components/Avatar";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
-import { format, getDict } from "@/lib/i18n";
+import { format, getDict, getLocale } from "@/lib/i18n";
 
 export default async function ProfilePage() {
-  const [session, dict] = await Promise.all([auth(), getDict()]);
+  const [session, dict, locale] = await Promise.all([auth(), getDict(), getLocale()]);
   const userId = session!.user.id;
 
-  const [catalog, certificates, userSkills, receivedReviews] = await Promise.all([
+  const [achievements, catalog, certificates, userSkills, receivedReviews] = await Promise.all([
+    prisma.achievement.findMany({
+      where: { userId },
+      include: { certificate: { select: { status: true } } },
+      orderBy: { achievedAt: "desc" },
+    }),
     prisma.skill.findMany({ select: { id: true, name: true, category: true }, orderBy: [{ category: "asc" }, { name: "asc" }] }),
     prisma.certificate.findMany({
       where: { userId },
@@ -82,6 +88,22 @@ export default async function ProfilePage() {
         }))}
         skills={catalog.map((s) => ({ id: s.id, name: s.name }))}
         dict={dict.certs}
+      />
+
+      <AchievementsManager
+        items={achievements.map((a) => ({
+          id: a.id,
+          title: a.title,
+          eventName: a.eventName,
+          type: a.type,
+          achievedAt: a.achievedAt.toISOString(),
+          description: a.description,
+          certificateId: a.certificateId,
+          certificateApproved: a.certificate?.status === "APPROVED",
+        }))}
+        certificates={certificates.map((c) => ({ id: c.id, title: c.title }))}
+        locale={locale}
+        dict={dict.achievements}
       />
 
       <section className="flex flex-col gap-3">
