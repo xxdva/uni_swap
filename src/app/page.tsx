@@ -45,7 +45,7 @@ export default async function Home() {
   ];
 
   return (
-    <main className="mx-auto grid w-full max-w-[90rem] flex-1 gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+    <main className="mx-auto grid w-full max-w-7xl flex-1 gap-6 px-4 py-6 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,15rem)] xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)_minmax(0,17rem)] lg:items-start">
       {/* Центр идёт первым в разметке, чтобы на мобильных он был сверху; на десктопе — вторая колонка. */}
       <div className="flex flex-col gap-8 lg:order-2">
         <section className="rounded-2xl bg-gradient-to-b from-rose-100 to-white px-6 py-12 text-center dark:from-rose-950/40 dark:to-transparent">
@@ -63,6 +63,19 @@ export default async function Home() {
             )}
           </div>
         </section>
+
+        <Link
+          href="/services"
+          className="group flex items-center justify-between gap-4 rounded-2xl bg-rose-500 px-8 py-6 text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-rose-600 hover:shadow-lg dark:bg-rose-400 dark:text-rose-950 dark:hover:bg-rose-300"
+        >
+          <span className="flex flex-col gap-1">
+            <span className="text-2xl font-semibold">{dict.home.servicesCta}</span>
+            <span className="text-sm opacity-90">{dict.home.servicesCtaHint}</span>
+          </span>
+          <span className="text-3xl transition-transform group-hover:translate-x-1" aria-hidden="true">
+            →
+          </span>
+        </Link>
 
         <section className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
           {features.map((f, i) => (

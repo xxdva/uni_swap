@@ -12,6 +12,7 @@ export type Dictionary = {
     logout: string;
     themeToggle: string;
     register: string;
+    services: string;
   };
   home: {
     description: string;
@@ -29,6 +30,8 @@ export type Dictionary = {
     itNewsTitle: string;
     regionAll: string;
     newsEmpty: string;
+    servicesCta: string;
+    servicesCtaHint: string;
     newsSourceLabel: string;
   };
   register: {
@@ -53,6 +56,33 @@ export type Dictionary = {
     roleMentorDesc: string;
     roleAdmin: string;
     roleAdminDesc: string;
+  };
+  services: {
+    title: string;
+    subtitle: string;
+    s1Title: string;
+    s1Desc: string;
+    s2Title: string;
+    s2Desc: string;
+    s3Title: string;
+    s3Desc: string;
+    s4Title: string;
+    s4Desc: string;
+    s5Title: string;
+    s5Desc: string;
+    s6Title: string;
+    s6Desc: string;
+    s7Title: string;
+    s7Desc: string;
+    s8Title: string;
+    s8Desc: string;
+    s9Title: string;
+    s9Desc: string;
+    s10Title: string;
+    s10Desc: string;
+    ctaTitle: string;
+    ctaButton: string;
+    ctaLoggedIn: string;
   };
   login: {
     title: string;

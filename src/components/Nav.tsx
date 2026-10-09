@@ -19,6 +19,9 @@ export async function Nav() {
       </Link>
 
       <nav className="flex items-center gap-4">
+        <Link href="/services" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
+          {dict.nav.services}
+        </Link>
         {session?.user ? (
           <>
             <Link href="/profile" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
