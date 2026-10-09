@@ -11,6 +11,7 @@ export const ru: Dictionary = {
     login: "Войти",
     logout: "Выйти",
     themeToggle: "Сменить тему",
+    register: "Регистрация",
   },
   home: {
     description:
@@ -37,6 +38,9 @@ export const ru: Dictionary = {
     genericError: "Не удалось отправить письмо. Попробуйте ещё раз.",
     networkError: "Ошибка сети. Попробуйте ещё раз.",
     domainError: "Регистрация доступна только на почту: {domains}",
+    alreadyRegistered: "Эта почта уже зарегистрирована — просто войдите.",
+    haveAccount: "Уже есть аккаунт?",
+    loginLink: "Войти",
     roleLabel: "Кто вы?",
     roleUser: "Юзер",
     roleUserDesc: "Обмениваюсь навыками",
@@ -44,6 +48,18 @@ export const ru: Dictionary = {
     roleMentorDesc: "Проверяю сертификаты",
     roleAdmin: "Админ",
     roleAdminDesc: "Модерирую платформу",
+  },
+  login: {
+    title: "Вход в Uni Swap",
+    subtitle: "Введите почту, с которой вы регистрировались — мы пришлём ссылку для входа, пароль не нужен.",
+    emailLabel: "Почта",
+    submit: "Получить ссылку для входа",
+    submitting: "Отправляем…",
+    notRegistered: "Такой почты нет среди зарегистрированных. Сначала пройдите регистрацию.",
+    noAccount: "Нет аккаунта?",
+    registerLink: "Зарегистрироваться",
+    genericError: "Не удалось отправить письмо. Попробуйте ещё раз.",
+    networkError: "Ошибка сети. Попробуйте ещё раз.",
   },
   checkEmail: {
     title: "Проверьте почту",

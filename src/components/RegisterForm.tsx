@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format } from "@/lib/i18n/format";
 import type { Dictionary } from "@/lib/i18n/types";
@@ -44,7 +45,11 @@ export function RegisterForm({
 
       if (!res.ok) {
         setError(
-          data.error === "domain_not_allowed" ? format(dict.domainError, { domains: domainsText }) : dict.genericError
+          data.error === "domain_not_allowed"
+            ? format(dict.domainError, { domains: domainsText })
+            : data.error === "already_registered"
+              ? dict.alreadyRegistered
+              : dict.genericError
         );
         return;
       }
@@ -126,6 +131,13 @@ export function RegisterForm({
           {pending ? dict.submitting : dict.submit}
         </button>
       </form>
+
+      <p className="text-sm text-muted">
+        {dict.haveAccount}{" "}
+        <Link href="/login" className="underline">
+          {dict.loginLink}
+        </Link>
+      </p>
     </main>
   );
 }

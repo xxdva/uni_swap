@@ -47,9 +47,14 @@ export async function Nav() {
             <SignOutButton label={dict.nav.logout} />
           </>
         ) : (
-          <Link href="/register" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
-            {dict.nav.login}
-          </Link>
+          <>
+            <Link href="/login" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
+              {dict.nav.login}
+            </Link>
+            <Link href="/register" className="text-sm text-rose-700 transition-colors hover:underline dark:text-rose-200">
+              {dict.nav.register}
+            </Link>
+          </>
         )}
         <ThemeToggle current={theme} label={dict.nav.themeToggle} />
         <LanguageSwitcher current={locale} />

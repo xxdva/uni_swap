@@ -6,7 +6,7 @@ export function SignOutButton({ label }: { label: string }) {
   return (
     <button
       type="button"
-      onClick={() => signOut({ callbackUrl: "/register" })}
+      onClick={() => signOut({ callbackUrl: "/login" })}
       className="text-sm text-rose-500 hover:text-rose-800 dark:text-rose-300 dark:hover:text-white"
     >
       {label}

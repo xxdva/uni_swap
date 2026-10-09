@@ -9,6 +9,7 @@
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
     "seed:skills": "tsx prisma/seed-skills.ts",
+    "seed:people": "tsx prisma/seed-people.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {

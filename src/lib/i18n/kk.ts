@@ -11,6 +11,7 @@ export const kk: Dictionary = {
     login: "Кіру",
     logout: "Шығу",
     themeToggle: "Тақырыпты өзгерту",
+    register: "Тіркелу",
   },
   home: {
     description:
@@ -36,6 +37,9 @@ export const kk: Dictionary = {
     genericError: "Хат жіберілмеді. Қайталап көріңіз.",
     networkError: "Желі қатесі. Қайталап көріңіз.",
     domainError: "Тіркелу тек мына пошта үшін қолжетімді: {domains}",
+    alreadyRegistered: "Бұл пошта тіркелген — жай ғана кіріңіз.",
+    haveAccount: "Аккаунтыңыз бар ма?",
+    loginLink: "Кіру",
     roleLabel: "Сіз кімсіз?",
     roleUser: "Қолданушы",
     roleUserDesc: "Дағдылармен алмасамын",
@@ -43,6 +47,18 @@ export const kk: Dictionary = {
     roleMentorDesc: "Сертификаттарды тексеремін",
     roleAdmin: "Әкімші",
     roleAdminDesc: "Платформаны модерациялаймын",
+  },
+  login: {
+    title: "Uni Swap-қа кіру",
+    subtitle: "Тіркелген поштаңызды енгізіңіз — біз кіру сілтемесін жібереміз, құпиясөз қажет емес.",
+    emailLabel: "Пошта",
+    submit: "Кіру сілтемесін алу",
+    submitting: "Жіберілуде…",
+    notRegistered: "Бұл пошта тіркелмеген. Алдымен тіркеліңіз.",
+    noAccount: "Аккаунт жоқ па?",
+    registerLink: "Тіркелу",
+    genericError: "Хатты жіберу мүмкін болмады. Қайталап көріңіз.",
+    networkError: "Желі қатесі. Қайталап көріңіз.",
   },
   checkEmail: {
     title: "Поштаңызды тексеріңіз",

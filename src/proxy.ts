@@ -5,7 +5,7 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
 
   if (!isLoggedIn) {
-    return NextResponse.redirect(new URL("/register", req.url));
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   if (req.auth?.user?.isBlocked) {

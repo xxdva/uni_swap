@@ -42,12 +42,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "blocked" }, { status: 403 });
   }
 
+  // Уже подтверждённая почта — это вход, а не регистрация.
+  if (existing?.emailVerified) {
+    return NextResponse.json({ error: "already_registered" }, { status: 409 });
+  }
+
   // Пользователь создаётся сразу (ещё не подтверждён), чтобы зафиксировать
   // момент согласия на обработку данных вместе с самой регистрацией.
   await prisma.user.upsert({
     where: { email },
     create: { email, role: parsed.data.role, consentAt: new Date() },
-    update: existing?.emailVerified ? {} : { consentAt: new Date() },
+    update: { consentAt: new Date() },
   });
 
   // Auth.js не бросает исключение при сбое sendVerificationRequest (например,

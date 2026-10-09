@@ -11,6 +11,7 @@ export type Dictionary = {
     login: string;
     logout: string;
     themeToggle: string;
+    register: string;
   };
   home: {
     description: string;
@@ -35,6 +36,9 @@ export type Dictionary = {
     genericError: string;
     networkError: string;
     domainError: string;
+    alreadyRegistered: string;
+    haveAccount: string;
+    loginLink: string;
     roleLabel: string;
     roleUser: string;
     roleUserDesc: string;
@@ -42,6 +46,18 @@ export type Dictionary = {
     roleMentorDesc: string;
     roleAdmin: string;
     roleAdminDesc: string;
+  };
+  login: {
+    title: string;
+    subtitle: string;
+    emailLabel: string;
+    submit: string;
+    submitting: string;
+    notRegistered: string;
+    noAccount: string;
+    registerLink: string;
+    genericError: string;
+    networkError: string;
   };
   checkEmail: { title: string; body: string };
   blocked: { title: string; body: string };

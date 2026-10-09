@@ -46,6 +46,11 @@ export default async function Home() {
           <Link href={session?.user ? "/matches" : "/register"} className="btn-primary px-6 py-3 text-base">
             {session?.user ? dict.home.ctaLoggedIn : dict.home.ctaLoggedOut}
           </Link>
+          {!session?.user && (
+            <Link href="/login" className="text-sm text-rose-700 underline dark:text-rose-200">
+              {dict.nav.login}
+            </Link>
+          )}
         </div>
       </section>
 
