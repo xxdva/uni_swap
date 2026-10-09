@@ -40,7 +40,7 @@ export function CertificateReviewActions({ certificateId, dict }: { certificateI
           type="button"
           disabled={pending !== null}
           onClick={() => act("reject")}
-          className="rounded-md border border-rose-300 px-3 py-1 text-xs font-medium text-rose-700 hover:bg-rose-100 disabled:opacity-50"
+          className="btn-outline px-3 py-1 text-xs"
         >
           {dict.reject}
         </button>

@@ -9,10 +9,11 @@ import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { Avatar } from "@/components/Avatar";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
-import { getDict } from "@/lib/i18n";
+import { getDict, getLocale } from "@/lib/i18n";
+import { skillLabel } from "@/lib/i18n/labels";
 
 export default async function MatchesPage() {
-  const [session, dict] = await Promise.all([auth(), getDict()]);
+  const [session, dict, locale] = await Promise.all([auth(), getDict(), getLocale()]);
   const matches = await findMatches(session!.user.id);
   const verifiedByUser = await getVerifiedSkillIdsForUsers(matches.map((m) => m.id));
 
@@ -56,7 +57,7 @@ export default async function MatchesPage() {
                   {m.theyCanTeachMe.map((s, i) => (
                     <span key={s.id} className="inline-flex items-center gap-1">
                       {getSkillIcon(s.name, 14)}
-                      {s.name}
+                      {skillLabel(s.name, locale)}
                       {verifiedSkillIds.has(s.id) && <VerifiedBadge label={dict.mentor.verifiedLabel} />}
                       {i < m.theyCanTeachMe.length - 1 && ","}
                     </span>
@@ -66,13 +67,13 @@ export default async function MatchesPage() {
               )}
               {m.theyWantFromMe.length > 0 && (
                 <p className="text-sm text-muted">
-                  {dict.matches.wantsFromYou.replace("{skills}", m.theyWantFromMe.map((s) => s.name).join(", "))}
+                  {dict.matches.wantsFromYou.replace("{skills}", m.theyWantFromMe.map((s) => skillLabel(s.name, locale)).join(", "))}
                 </p>
               )}
               <RequestSessionForm
                 partnerId={m.id}
-                teachOptions={m.theyCanTeachMe}
-                learnOptions={m.theyWantFromMe}
+                teachOptions={m.theyCanTeachMe.map((s) => ({ ...s, name: skillLabel(s.name, locale) }))}
+                learnOptions={m.theyWantFromMe.map((s) => ({ ...s, name: skillLabel(s.name, locale) }))}
                 dict={dict.requestSession}
               />
               <div className="flex items-center gap-3 pt-1">

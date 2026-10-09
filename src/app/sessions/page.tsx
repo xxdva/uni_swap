@@ -9,6 +9,7 @@ import { Avatar } from "@/components/Avatar";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
 import { getDict, getLocale, type Locale } from "@/lib/i18n";
+import { skillLabel } from "@/lib/i18n/labels";
 import { getSkillIcon } from "@/components/ToolIcons";
 import type { SessionStatus } from "@prisma/client";
 
@@ -84,7 +85,7 @@ export default async function SessionsPage() {
                 <span>{beforeSkill}</span>
                 {getSkillIcon(s.skill.name, 16)}
                 <span>
-                  {s.skill.name}
+                  {skillLabel(s.skill.name, locale)}
                   {betweenSkillAndDate}
                   {dateText}
                   {afterDate}

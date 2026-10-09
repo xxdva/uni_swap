@@ -2,12 +2,21 @@ import { prisma } from "@/lib/prisma";
 import { format } from "@/lib/i18n/format";
 import type { Dictionary } from "@/lib/i18n/types";
 import { Avatar } from "@/components/Avatar";
+import { skillLabel } from "@/lib/i18n/labels";
 import { EmptyState } from "@/components/EmptyState";
 import { CertificateReviewActions } from "@/components/CertificateReviewActions";
 
 // Очередь сертификатов на проверку — общая для кабинета ментора и админки.
 // Свои сертификаты проверяющему не показываем (API их всё равно не примет).
-export async function CertificateReviewQueue({ reviewerId, dict }: { reviewerId: string; dict: Dictionary["certs"] }) {
+export async function CertificateReviewQueue({
+  reviewerId,
+  dict,
+  locale,
+}: {
+  reviewerId: string;
+  dict: Dictionary["certs"];
+  locale: string;
+}) {
   const pending = await prisma.certificate.findMany({
     where: { status: "PENDING", userId: { not: reviewerId } },
     select: {
@@ -35,7 +44,7 @@ export async function CertificateReviewQueue({ reviewerId, dict }: { reviewerId:
             </span>
             <p className="text-sm text-muted">
               {format(dict.uploadedBy, { name: c.user.name ?? c.user.email })}
-              {c.skill ? ` · ${format(dict.forSkill, { skill: c.skill.name })}` : ""}
+              {c.skill ? ` · ${format(dict.forSkill, { skill: skillLabel(c.skill.name, locale) })}` : ""}
             </p>
             <a href={`/api/certificates/${c.id}/file`} target="_blank" rel="noreferrer" className="text-sm underline">
               {dict.view}

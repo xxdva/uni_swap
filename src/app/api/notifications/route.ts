@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getLocale } from "@/lib/i18n";
+import { skillLabel } from "@/lib/i18n/labels";
 
 // «Предложения» (BR из заметок по стейкхолдерам): непринятые входящие
 // заявки на сессию — ровно то, что должно «всплывать» уведомлением.
@@ -10,6 +12,7 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  const locale = await getLocale();
   const pending = await prisma.skillSession.findMany({
     where: { partnerId: session.user.id, status: "PENDING" },
     include: {
@@ -24,7 +27,7 @@ export async function GET() {
     pending.map((s) => ({
       id: s.id,
       requesterName: s.requester.name ?? s.requester.email,
-      skillName: s.skill.name,
+      skillName: skillLabel(s.skill.name, locale),
       dateTime: s.dateTime.toISOString(),
     }))
   );

@@ -30,13 +30,9 @@ function StarIcon() {
 }
 
 export default async function Home() {
-  const [session, dict, locale, hackathons, itNews] = await Promise.all([
-    auth(),
-    getDict(),
-    getLocale(),
-    getHackathonNews(),
-    getItNews(),
-  ]);
+  const [session, dict, locale] = await Promise.all([auth(), getDict(), getLocale()]);
+  // Новости берём на языке интерфейса.
+  const [hackathons, itNews] = await Promise.all([getHackathonNews(locale), getItNews(locale)]);
 
   const features = [
     { icon: <SwapIcon />, title: dict.home.feature1Title, desc: dict.home.feature1Desc },

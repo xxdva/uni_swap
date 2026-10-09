@@ -1,41 +1,53 @@
 // Лента новостей для главной: RSS без ключей и без собственной БД.
-// Хакатоны по регионам Казахстана — через поиск Google News (RSS), IT-новости
-// страны — RSS DigitalBusiness.kz. Каждый запрос кэшируется Next на час
+// Источник — поиск Google News (RSS) на языке интерфейса (ru/en/kk) плюс
+// RSS DigitalBusiness.kz для русского. Каждый запрос кэшируется Next на час
 // (fetch + revalidate), так что главная не ходит во внешние сервисы на
 // каждый визит; любая ошибка источника просто даёт пустой список.
+// Это не машинный перевод: для en/kk берутся статьи, опубликованные на этих
+// языках; если их мало, список добирается русскими.
+import { regionLabel } from "./i18n/labels";
 
 export type NewsItem = {
   title: string;
   url: string;
   source: string;
   date: string; // ISO
-  region?: string;
+  region?: string; // русское название региона — ключ (подпись переводится при показе)
 };
 
+type Lang = "ru" | "en" | "kk";
 type Region = { name: string; pattern: RegExp };
 
-// Регион определяем по заголовку — поиск Google иногда подмешивает чужие города.
+// Регион определяем по заголовку (на трёх языках) — поиск Google иногда
+// подмешивает чужие города.
 export const REGIONS: Region[] = [
-  { name: "Астана", pattern: /астан|нур-султан\b|astana/i },
+  { name: "Астана", pattern: /астан|нур-султан|astana|nur-sultan/i },
   { name: "Алматы", pattern: /алмат|almaty/i },
   { name: "Шымкент", pattern: /шымкент|shymkent/i },
-  { name: "Караганда", pattern: /караганд|karaganda/i },
-  { name: "Актобе", pattern: /актобе|актюбин/i },
-  { name: "Атырау", pattern: /атырау/i },
-  { name: "Павлодар", pattern: /павлодар/i },
-  { name: "Костанай", pattern: /костанай|қостанай/i },
-  { name: "Усть-Каменогорск", pattern: /усть-камен|өскемен|оскемен|восточно-казахстан/i },
-  { name: "Актау", pattern: /актау|мангистау/i },
-  { name: "Уральск", pattern: /уральск|западно-казахстан/i },
-  { name: "Семей", pattern: /семей/i },
+  { name: "Караганда", pattern: /караганд|қарағанд|karaganda|qaraghandy/i },
+  { name: "Актобе", pattern: /актобе|актюбин|ақтөбе|aktobe/i },
+  { name: "Атырау", pattern: /атырау|atyrau/i },
+  { name: "Павлодар", pattern: /павлодар|pavlodar/i },
+  { name: "Костанай", pattern: /костанай|қостанай|kostanay|kostanai/i },
+  { name: "Усть-Каменогорск", pattern: /усть-камен|өскемен|оскемен|восточно-казахстан|ust-kamenogorsk|oskemen/i },
+  { name: "Актау", pattern: /актау|мангистау|ақтау|aktau|mangystau/i },
+  { name: "Уральск", pattern: /уральск|западно-казахстан|орал|uralsk|oral\b/i },
+  { name: "Семей", pattern: /семей|semey|semipalatinsk/i },
 ];
 
-const KZ_PATTERN = /казахстан|қазақстан|kazakh|\bkz\b|астан|алмат|шымкент|караганд|актобе|атырау|павлодар|костанай|актау|уральск|семей|өскемен|оскемен/i;
+const KZ_PATTERN =
+  /казахстан|қазақстан|kazakh|qazaq|\bkz\b|астан|astana|алмат|almaty|шымкент|shymkent|караганд|қарағанд|karaganda|актобе|ақтөбе|aktobe|атырау|atyrau|павлодар|pavlodar|костанай|қостанай|kostanay|актау|ақтау|aktau|уральск|орал\b|uralsk|семей|semey|өскемен|оскемен|oskemen/i;
 
-const EVENT_PATTERN = /хакатон|hackathon|challenge|кубок|конкурс|чемпионат|олимпиад|стартап|startup|кодинг|coding/i;
+const EVENT_PATTERN =
+  /хакатон|hackathon|challenge|кубок|конкурс|чемпионат|олимпиад|стартап|startup|кодинг|coding|байқау|жарыс|contest|competition|championship|olympiad|\bcup\b/i;
+
 // Короткие слова (ИТ, ИИ, IT, AI) — только как отдельные слова, иначе
 // «ит» совпадёт с половиной русского языка.
-const IT_PATTERN = /(?<![а-яёa-z])(?:ит|it|ии|ai)(?![а-яёa-z])|цифров|искусственн|технолог|стартап|программ|кибер|данн|робот|приложен|финтех|хакатон|дрон|нейросет|разработ|платформ|digital|интернет|смартфон|гаджет/i;
+const IT_PATTERN =
+  /(?<![а-яёa-z])(?:ит|it|ии|ai|жи)(?![а-яёa-z])|цифров|санды|искусственн|технолог|стартап|программ|кибер|данн|робот|приложен|финтех|хакатон|дрон|нейросет|разработ|платформ|digital|интернет|смартфон|гаджет|software|tech|startup|cyber|fintech|drone|robot|data|internet|app\b/i;
+
+// Казахские буквы, которых нет в русском — по ним отличаем kk-статьи от ru.
+const KAZAKH_LETTERS = /[әғқңөұүһі]/i;
 
 const decode = (s: string) =>
   s
@@ -87,8 +99,20 @@ async function fetchRss(url: string, fallbackSource: string): Promise<NewsItem[]
   }
 }
 
-const googleNews = (query: string) =>
-  `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ru&gl=KZ&ceid=KZ:ru`;
+const EDITION: Record<Lang, string> = {
+  ru: "hl=ru&gl=KZ&ceid=KZ:ru",
+  en: "hl=en&gl=KZ&ceid=KZ:en",
+  kk: "hl=kk&gl=KZ&ceid=KZ:kk",
+};
+
+const googleNews = (query: string, lang: Lang) =>
+  `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&${EDITION[lang]}`;
+
+const QUERY: Record<Lang, { hackathon: string; country: string; it: string }> = {
+  ru: { hackathon: "хакатон", country: "Казахстан", it: "IT технологии Казахстан" },
+  en: { hackathon: "hackathon", country: "Kazakhstan", it: "IT technology Kazakhstan" },
+  kk: { hackathon: "хакатон", country: "Қазақстан", it: "ақпараттық технологиялар Қазақстан" },
+};
 
 const byDateDesc = (a: NewsItem, b: NewsItem) => b.date.localeCompare(a.date);
 
@@ -102,37 +126,64 @@ function dedupe(items: NewsItem[]): NewsItem[] {
   });
 }
 
-export async function getHackathonNews(): Promise<NewsItem[]> {
+// Для kk оставляем в приоритете статьи с казахскими буквами в заголовке.
+function languageFilter(items: NewsItem[], lang: Lang): NewsItem[] {
+  if (lang === "kk") return items.filter((i) => KAZAKH_LETTERS.test(i.title));
+  if (lang === "en") return items.filter((i) => !/[а-яё]/i.test(i.title));
+  return items;
+}
+
+async function hackathonsFor(lang: Lang): Promise<NewsItem[]> {
+  const q = QUERY[lang];
   const [general, ...perRegion] = await Promise.all([
-    fetchRss(googleNews("хакатон Казахстан when:120d"), "Google News"),
-    ...REGIONS.map((r) => fetchRss(googleNews(`хакатон ${r.name} when:120d`), "Google News")),
+    fetchRss(googleNews(`${q.hackathon} ${q.country} when:120d`, lang), "Google News"),
+    ...REGIONS.map((r) =>
+      fetchRss(googleNews(`${q.hackathon} ${regionLabel(r.name, lang)} when:120d`, lang), "Google News")
+    ),
   ]);
 
   const tagged: NewsItem[] = [];
   const isEvent = (i: NewsItem) => EVENT_PATTERN.test(i.title);
   perRegion.forEach((items, i) => {
     const region = REGIONS[i];
-    for (const item of items) {
+    for (const item of languageFilter(items, lang)) {
       if (isEvent(item) && region.pattern.test(item.title)) tagged.push({ ...item, region: region.name });
     }
   });
   // Общий поиск по стране: оставляем только то, что относится к Казахстану,
   // и пробуем присвоить регион по заголовку.
-  for (const item of general) {
+  for (const item of languageFilter(general, lang)) {
     if (!isEvent(item) || !KZ_PATTERN.test(item.title)) continue;
     const region = REGIONS.find((r) => r.pattern.test(item.title));
     tagged.push({ ...item, region: region?.name });
   }
 
-  return dedupe(tagged.sort(byDateDesc)).slice(0, 40);
+  return dedupe(tagged.sort(byDateDesc));
 }
 
-export async function getItNews(): Promise<NewsItem[]> {
+async function itNewsFor(lang: Lang): Promise<NewsItem[]> {
   const [feed, search] = await Promise.all([
-    fetchRss("https://digitalbusiness.kz/feed/", "DigitalBusiness.kz"),
-    fetchRss(googleNews("IT технологии Казахстан when:14d"), "Google News"),
+    lang === "ru" ? fetchRss("https://digitalbusiness.kz/feed/", "DigitalBusiness.kz") : Promise.resolve([]),
+    fetchRss(googleNews(`${QUERY[lang].it} when:14d`, lang), "Google News"),
   ]);
-  const kz = search.filter((i) => KZ_PATTERN.test(i.title));
+  const kz = languageFilter(search, lang).filter((i) => KZ_PATTERN.test(i.title));
   const it = feed.filter((i) => IT_PATTERN.test(i.title));
-  return dedupe([...it, ...kz].sort(byDateDesc)).slice(0, 8);
+  return dedupe([...it, ...kz].sort(byDateDesc));
+}
+
+// Если на en/kk нашлось мало статей, добираем русскими, чтобы блок не был пустым.
+const MIN_LOCALIZED = 4;
+
+export async function getHackathonNews(lang: Lang = "ru"): Promise<NewsItem[]> {
+  const own = await hackathonsFor(lang);
+  if (lang === "ru" || own.length >= MIN_LOCALIZED) return own.slice(0, 40);
+  const ru = await hackathonsFor("ru");
+  return dedupe([...own, ...ru]).slice(0, 40);
+}
+
+export async function getItNews(lang: Lang = "ru"): Promise<NewsItem[]> {
+  const own = await itNewsFor(lang);
+  if (lang === "ru" || own.length >= MIN_LOCALIZED) return own.slice(0, 8);
+  const ru = await itNewsFor("ru");
+  return dedupe([...own, ...ru]).slice(0, 8);
 }

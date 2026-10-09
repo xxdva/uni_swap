@@ -7,11 +7,11 @@ import { CertificateReviewQueue } from "@/components/CertificateReviewQueue";
 import { Avatar } from "@/components/Avatar";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
-import { format, getDict } from "@/lib/i18n";
+import { format, getDict, getLocale } from "@/lib/i18n";
 import type { ReportStatus } from "@prisma/client";
 
 export default async function AdminPage() {
-  const [admin, dict] = await Promise.all([requireAdmin(), getDict()]);
+  const [admin, dict, locale] = await Promise.all([requireAdmin(), getDict(), getLocale()]);
   if (!admin) redirect("/");
 
   const REPORT_STATUS_LABEL: Record<ReportStatus, string> = {
@@ -49,7 +49,7 @@ export default async function AdminPage() {
         <StatCard label={dict.admin.statsPendingCertificates} value={pendingCertificates} />
       </div>
 
-      <CertificateReviewQueue reviewerId={admin.user.id} dict={dict.certs} />
+      <CertificateReviewQueue reviewerId={admin.user.id} dict={dict.certs} locale={locale} />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-medium text-rose-700 dark:text-rose-200">

@@ -19,9 +19,9 @@ export type CertificateItem = {
 const MAX_BYTES = 3 * 1024 * 1024;
 
 const STATUS_STYLE: Record<Status, string> = {
-  PENDING: "bg-amber-100 text-amber-800",
-  APPROVED: "bg-green-100 text-green-800",
-  REJECTED: "bg-red-100 text-red-700",
+  PENDING: "badge-warning",
+  APPROVED: "badge-success",
+  REJECTED: "badge-danger",
 };
 
 export function CertificatesManager({
@@ -95,7 +95,7 @@ export function CertificatesManager({
           <li key={c.id} className="card flex flex-col gap-1">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-medium">{c.title}</span>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[c.status]}`}>
+              <span className={`text-xs font-medium ${STATUS_STYLE[c.status]}`}>
                 {STATUS_LABEL[c.status]}
               </span>
             </div>

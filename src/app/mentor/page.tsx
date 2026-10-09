@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { getDict } from "@/lib/i18n";
+import { getDict, getLocale } from "@/lib/i18n";
+import { skillLabel } from "@/lib/i18n/labels";
 import { getVerifiedSkillIds } from "@/lib/verification";
 import { getSkillIcon } from "@/components/ToolIcons";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
@@ -11,7 +12,7 @@ import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
 
 export default async function MentorPage() {
-  const [session, dict] = await Promise.all([auth(), getDict()]);
+  const [session, dict, locale] = await Promise.all([auth(), getDict(), getLocale()]);
   const userId = session!.user.id;
 
   // Кабинет только для менторов: стать ментором можно лишь при регистрации.
@@ -54,7 +55,7 @@ export default async function MentorPage() {
             {verifiedSkills.map((s) => (
               <li key={s.id} className="pill">
                 {getSkillIcon(s.skill.name, 18)}
-                <span>{s.skill.name}</span>
+                <span>{skillLabel(s.skill.name, locale)}</span>
                 <VerifiedBadge label={dict.mentor.verifiedLabel} />
               </li>
             ))}
@@ -64,7 +65,7 @@ export default async function MentorPage() {
 
       <div>
         <p className="mb-3 text-sm text-muted">{dict.mentor.reviewHint}</p>
-        <CertificateReviewQueue reviewerId={userId} dict={dict.certs} />
+        <CertificateReviewQueue reviewerId={userId} dict={dict.certs} locale={locale} />
       </div>
     </main>
   );

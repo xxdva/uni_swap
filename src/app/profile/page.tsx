@@ -9,6 +9,7 @@ import { Avatar } from "@/components/Avatar";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
 import { format, getDict, getLocale } from "@/lib/i18n";
+import { skillLabel } from "@/lib/i18n/labels";
 
 export default async function ProfilePage() {
   const [session, dict, locale] = await Promise.all([auth(), getDict(), getLocale()]);
@@ -74,8 +75,8 @@ export default async function ProfilePage() {
 
       <RoleSwitcher current={session!.user.role} title={dict.profile.roleTitle} hint={dict.profile.roleHint} dict={dict.register} />
 
-      <SkillsManager type="OFFER" title={dict.profile.offerTitle} items={offered} catalog={catalog} dict={dict.skills} />
-      <SkillsManager type="WANT" title={dict.profile.wantTitle} items={wanted} catalog={catalog} dict={dict.skills} />
+      <SkillsManager type="OFFER" title={dict.profile.offerTitle} items={offered} catalog={catalog} locale={locale} dict={dict.skills} />
+      <SkillsManager type="WANT" title={dict.profile.wantTitle} items={wanted} catalog={catalog} locale={locale} dict={dict.skills} />
 
       <CertificatesManager
         items={certificates.map((c) => ({
@@ -83,10 +84,10 @@ export default async function ProfilePage() {
           title: c.title,
           status: c.status,
           reviewNote: c.reviewNote,
-          skillName: c.skill?.name ?? null,
+          skillName: c.skill ? skillLabel(c.skill.name, locale) : null,
           reviewerName: c.reviewer ? (c.reviewer.name ?? c.reviewer.email) : null,
         }))}
-        skills={catalog.map((s) => ({ id: s.id, name: s.name }))}
+        skills={catalog.map((s) => ({ id: s.id, name: skillLabel(s.name, locale) }))}
         dict={dict.certs}
       />
 
@@ -122,7 +123,7 @@ export default async function ProfilePage() {
                 <Stars rating={r.rating} />
               </div>
               <p className="text-sm text-muted">
-                {format(dict.profile.reviewFor, { skill: r.session.skill.name })}
+                {format(dict.profile.reviewFor, { skill: skillLabel(r.session.skill.name, locale) })}
                 {r.text ? `: ${r.text}` : ""}
               </p>
             </li>

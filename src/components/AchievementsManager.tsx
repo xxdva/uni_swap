@@ -116,10 +116,10 @@ export function AchievementsManager({
             </div>
             <p className="text-sm text-muted">{a.eventName}</p>
             <p className="flex flex-wrap items-center gap-2 text-xs text-muted">
-              <span className="rounded-full bg-rose-100 px-2 py-0.5 text-rose-700">{TYPE_LABEL[a.type]}</span>
+              <span className="badge-soft">{TYPE_LABEL[a.type]}</span>
               <span>{dateFmt(a.achievedAt)}</span>
               {a.certificateApproved && (
-                <span className="rounded-full bg-green-100 px-2 py-0.5 text-green-800">✓ {dict.verified}</span>
+                <span className="badge-success">✓ {dict.verified}</span>
               )}
             </p>
             {a.description && <p className="text-sm">{a.description}</p>}

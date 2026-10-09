@@ -16,6 +16,8 @@
 :root.dark {
   --background: #1c1116;
   --foreground: #fecdd3;
+  /* Нативные контролы (select, date, скроллбары) тоже тёмные. */
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -63,7 +65,40 @@ body {
   .pill {
     @apply flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-sm transition-colors dark:border-rose-900/40 dark:bg-rose-950/20;
   }
+  /* Фильтры-«чипы»: размеры задаёт место использования, цвета — тут (обе темы). */
+  .chip {
+    @apply rounded-full border border-rose-200 bg-rose-50 text-rose-700 transition-colors hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-200 dark:hover:bg-rose-900/40;
+  }
+  .chip-active {
+    @apply border-rose-500 bg-rose-500 text-white hover:bg-rose-500 dark:border-rose-400 dark:bg-rose-400 dark:text-rose-950 dark:hover:bg-rose-400;
+  }
+  .badge-soft {
+    @apply rounded-full bg-rose-100 px-2 py-0.5 text-rose-700 dark:bg-rose-900/40 dark:text-rose-200;
+  }
+  .badge-success {
+    @apply rounded-full bg-green-100 px-2 py-0.5 text-green-800 dark:bg-green-900/40 dark:text-green-300;
+  }
+  .badge-warning {
+    @apply rounded-full bg-amber-100 px-2 py-0.5 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300;
+  }
+  .badge-danger {
+    @apply rounded-full bg-red-100 px-2 py-0.5 text-red-700 dark:bg-red-900/40 dark:text-red-300;
+  }
+  .btn-outline {
+    @apply rounded-md border border-rose-300 font-medium text-rose-700 transition-colors hover:bg-rose-100 disabled:opacity-50 dark:border-rose-800 dark:text-rose-200 dark:hover:bg-rose-900/30;
+  }
+  .text-strong {
+    @apply text-rose-800 dark:text-rose-100;
+  }
+  .tile {
+    @apply rounded-lg border border-rose-200 bg-white text-left transition-all hover:-translate-y-0.5 hover:border-rose-400 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none dark:border-rose-900/50 dark:bg-rose-950/30 dark:hover:border-rose-500;
+  }
   .badge-mutual {
     @apply rounded-full bg-rose-500 px-2 py-0.5 text-xs font-medium text-white dark:bg-rose-400 dark:text-rose-950;
   }
+}
+
+/* Красный текст ошибок в тёмной теме — светлее, чтобы читался. */
+:root.dark .text-red-600 {
+  color: var(--color-red-400);
 }

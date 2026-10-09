@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { format } from "@/lib/i18n/format";
 import type { Dictionary } from "@/lib/i18n/types";
 import { getSkillIcon } from "@/components/ToolIcons";
+import { categoryLabel, skillLabel } from "@/lib/i18n/labels";
 
 type Level = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 type SkillType = "OFFER" | "WANT";
@@ -24,12 +25,14 @@ export function SkillsManager({
   title,
   items,
   catalog,
+  locale,
   dict,
 }: {
   type: SkillType;
   title: string;
   items: UserSkillItem[];
   catalog: CatalogSkill[];
+  locale: string;
   dict: Dictionary["skills"];
 }) {
   const router = useRouter();
@@ -50,9 +53,9 @@ export function SkillsManager({
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return catalog.filter(
-      (s) => (category === null || (s.category ?? OTHER) === category) && (!q || s.name.toLowerCase().includes(q))
+      (s) => (category === null || (s.category ?? OTHER) === category) && (!q || s.name.toLowerCase().includes(q) || skillLabel(s.name, locale).toLowerCase().includes(q))
     );
-  }, [catalog, query, category]);
+  }, [catalog, query, category, locale]);
 
   async function addSkill(skillId: string) {
     setPendingId(skillId);
@@ -81,11 +84,7 @@ export function SkillsManager({
   }
 
   const chipClass = (active: boolean) =>
-    `rounded-full border px-3 py-1 text-xs transition-colors ${
-      active
-        ? "border-rose-500 bg-rose-500 text-white"
-        : "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
-    }`;
+    `chip px-3 py-1 text-xs ${active ? "chip-active" : ""}`;
 
   return (
     <section className="flex flex-col gap-3">
@@ -95,12 +94,12 @@ export function SkillsManager({
         {items.map((item) => (
           <li key={item.id} className="pill">
             {getSkillIcon(item.skill.name, 18)}
-            <span>{item.skill.name}</span>
+            <span>{skillLabel(item.skill.name, locale)}</span>
             <span className="text-rose-400">· {LEVEL_LABEL[item.level]}</span>
             <button
               type="button"
               onClick={() => removeSkill(item.id)}
-              aria-label={format(dict.removeLabel, { name: item.skill.name })}
+              aria-label={format(dict.removeLabel, { name: skillLabel(item.skill.name, locale) })}
               className="text-rose-400 hover:text-red-600"
             >
               ×
@@ -136,7 +135,7 @@ export function SkillsManager({
           </button>
           {categories.map((c) => (
             <button key={c} type="button" onClick={() => setCategory(c)} className={chipClass(category === c)}>
-              {c}
+              {categoryLabel(c, locale)}
             </button>
           ))}
         </div>
@@ -150,13 +149,13 @@ export function SkillsManager({
                   type="button"
                   disabled={added || pendingId !== null}
                   onClick={() => addSkill(s.id)}
-                  className="flex h-full w-full flex-col items-start gap-1 rounded-lg border border-rose-200 bg-white p-3 text-left text-sm transition-all hover:-translate-y-0.5 hover:border-rose-400 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                  className="tile flex h-full w-full flex-col items-start gap-1 p-3 text-sm"
                 >
-                  <span className="flex items-center gap-2 font-medium text-rose-800">
+                  <span className="text-strong flex items-center gap-2 font-medium">
                     {getSkillIcon(s.name, 18)}
-                    {s.name}
+                    {skillLabel(s.name, locale)}
                   </span>
-                  <span className="text-xs text-muted">{added ? `✓ ${dict.addedMark}` : (s.category ?? OTHER)}</span>
+                  <span className="text-xs text-muted">{added ? `✓ ${dict.addedMark}` : categoryLabel(s.category ?? OTHER, locale)}</span>
                 </button>
               </li>
             );

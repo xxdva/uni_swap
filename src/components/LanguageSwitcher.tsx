@@ -31,8 +31,8 @@ export function LanguageSwitcher({ current }: { current: Locale }) {
           aria-current={locale === current}
           className={
             locale === current
-              ? "rounded px-1.5 py-0.5 bg-rose-500 text-white"
-              : "rounded px-1.5 py-0.5 text-rose-700 hover:bg-rose-200"
+              ? "rounded px-1.5 py-0.5 bg-rose-500 text-white dark:bg-rose-400 dark:text-rose-950"
+              : "rounded px-1.5 py-0.5 text-rose-700 hover:bg-rose-200 dark:text-rose-200 dark:hover:bg-rose-900/40"
           }
         >
           {LABELS[locale]}

@@ -74,12 +74,8 @@ export function RoleSwitcher({
             type="button"
             disabled={pending}
             onClick={() => select(r.value)}
-            className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-              current === r.value
-                ? "border-rose-500 bg-rose-500 text-white"
-                : needsCode === r.value
-                  ? "border-rose-500 bg-rose-100 text-rose-700"
-                  : "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+            className={`chip px-4 py-1.5 text-sm ${
+              current === r.value ? "chip-active" : needsCode === r.value ? "border-rose-500" : ""
             }`}
           >
             {r.label}

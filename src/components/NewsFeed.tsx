@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Dictionary } from "@/lib/i18n/types";
 import type { NewsItem } from "@/lib/news";
+import { regionLabel } from "@/lib/i18n/labels";
 
 const LOCALE_TAG: Record<string, string> = { ru: "ru-RU", en: "en-GB", kk: "kk-KZ" };
 
@@ -13,9 +14,9 @@ function NewsList({ items, locale, empty }: { items: NewsItem[]; locale: string;
       {items.map((n) => (
         <li key={n.url}>
           <a href={n.url} target="_blank" rel="noopener noreferrer" className="card flex flex-col gap-0.5 p-2.5">
-            <span className="line-clamp-2 text-xs font-medium leading-snug text-rose-800">{n.title}</span>
+            <span className="line-clamp-2 text-strong text-xs font-medium leading-snug">{n.title}</span>
             <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-muted">
-              {n.region && <span className="rounded-full bg-rose-100 px-2 py-0.5 text-rose-700">{n.region}</span>}
+              {n.region && <span className="badge-soft">{regionLabel(n.region, locale)}</span>}
               <span className="truncate">{n.source}</span>
               <span>
                 · {new Date(n.date).toLocaleDateString(LOCALE_TAG[locale] ?? "ru-RU", { day: "numeric", month: "short" })}
@@ -53,11 +54,7 @@ export function HackathonsPanel({
   );
 
   const chip = (active: boolean) =>
-    `rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
-      active
-        ? "border-rose-500 bg-rose-500 text-white"
-        : "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
-    }`;
+    `chip px-2.5 py-0.5 text-xs ${active ? "chip-active" : ""}`;
 
   return (
     <aside className={PANEL}>
@@ -68,7 +65,7 @@ export function HackathonsPanel({
         </button>
         {available.map((r) => (
           <button key={r} type="button" onClick={() => setRegion(r)} className={chip(region === r)}>
-            {r}
+            {regionLabel(r, locale)}
           </button>
         ))}
       </div>
