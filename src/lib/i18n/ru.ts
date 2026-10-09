@@ -64,6 +64,8 @@ export const ru: Dictionary = {
     statsWanted: "Хочу научиться",
     statsRating: "Средний рейтинг",
     statsReviews: "Отзывов получено",
+    roleTitle: "Моя роль",
+    roleHint: "Роль можно сменить в любой момент.",
   },
   skills: {
     empty: "Пока пусто",

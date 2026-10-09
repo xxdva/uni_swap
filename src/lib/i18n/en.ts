@@ -62,6 +62,8 @@ export const en: Dictionary = {
     statsWanted: "Skills wanted",
     statsRating: "Average rating",
     statsReviews: "Reviews received",
+    roleTitle: "My role",
+    roleHint: "You can change your role at any time.",
   },
   skills: {
     empty: "Nothing yet",

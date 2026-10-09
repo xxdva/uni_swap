@@ -63,6 +63,8 @@ export const kk: Dictionary = {
     statsWanted: "Қалаған дағдылар",
     statsRating: "Орташа рейтинг",
     statsReviews: "Алынған пікірлер",
+    roleTitle: "Менің рөлім",
+    roleHint: "Рөлді кез келген уақытта ауыстыруға болады.",
   },
   skills: {
     empty: "Әзірге бос",

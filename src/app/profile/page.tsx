@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SkillsManager } from "@/components/SkillsManager";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { CertificatesManager } from "@/components/CertificatesManager";
 import { Stars } from "@/components/Stars";
 import { Avatar } from "@/components/Avatar";
@@ -64,6 +65,8 @@ export default async function ProfilePage() {
         <StatCard label={dict.profile.statsRating} value={avgRating !== null ? avgRating.toFixed(1) : "—"} />
         <StatCard label={dict.profile.statsReviews} value={receivedReviews.length} />
       </div>
+
+      <RoleSwitcher current={session!.user.role} title={dict.profile.roleTitle} hint={dict.profile.roleHint} dict={dict.register} />
 
       <SkillsManager type="OFFER" title={dict.profile.offerTitle} items={offered} catalog={catalog} dict={dict.skills} />
       <SkillsManager type="WANT" title={dict.profile.wantTitle} items={wanted} catalog={catalog} dict={dict.skills} />

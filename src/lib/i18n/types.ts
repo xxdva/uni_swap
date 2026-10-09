@@ -56,6 +56,8 @@ export type Dictionary = {
     statsWanted: string;
     statsRating: string;
     statsReviews: string;
+    roleTitle: string;
+    roleHint: string;
   };
   skills: {
     empty: string;
