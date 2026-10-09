@@ -51,9 +51,13 @@ export async function POST(req: Request) {
   // неверные SMTP-креды) — вместо этого signIn(..., { redirect: false })
   // молча возвращает ссылку на страницу /api/auth/error. Поэтому проверяем
   // именно результат, а не полагаемся на try/catch.
+  // Без явного redirectTo signIn() берёт callbackUrl из заголовка Referer
+  // этого самого запроса — а это /register, поэтому после перехода по
+  // магической ссылке пользователя кидало обратно на форму регистрации,
+  // хотя вход уже прошёл успешно.
   let redirectTarget: string;
   try {
-    redirectTarget = await signIn("nodemailer", { email, redirect: false });
+    redirectTarget = await signIn("nodemailer", { email, redirect: false, redirectTo: "/matches" });
   } catch {
     return NextResponse.json({ error: "send_failed" }, { status: 502 });
   }
